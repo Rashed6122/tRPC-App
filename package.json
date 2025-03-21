@@ -1,0 +1,23 @@
+{
+  "name": "t3-app-1",
+  "version": "1.0.0",
+  "description": "project for ExpressJS with React + Vite using tRPC",
+  "main": "index.js",
+  "scripts": {
+    "dev client": "npm run dev --workspace=client",
+    "dev server": "npm run dev --workspace=server"
+  },
+  "workspaces": [
+    "./packages/client",
+    "./packages/server"
+  ],
+  "keywords": [
+    "ExpressJS",
+    "React",
+    "Vite",
+    "tRPC",
+    "typescript"
+  ],
+  "author": "Rashed",
+  "license": "ISC"
+}
