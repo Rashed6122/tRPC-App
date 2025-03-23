@@ -23,7 +23,7 @@ npm install --workspaces
 npx prisma db push
 ```
 
-## 5. run application:
+## 5. Run application:
 using Windows CMD 
 ```bash
 start cmd /k "npm run dev" & start cmd /k "npm run devS"
