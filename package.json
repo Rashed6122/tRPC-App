@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "project for ExpressJS with React + Vite using tRPC",
   "main": "index.js",
+  "packageManager": "pnpm@10.7.1",
   "type": "module",
   "scripts": {
-    "dev": "npm run dev --workspace=client",
-    "devS" : "npm run dev --workspace=server"
+    "dev": "npm run dev --workspace=client"
   },
   "workspaces": [
     "./packages/client",
@@ -23,5 +23,8 @@
     "schema": "./packages/server/prisma/schema.prisma"
   },
   "author": "Rashed",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
 }
