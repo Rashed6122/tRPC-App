@@ -16,7 +16,7 @@ git clone https://github.com/Rashed6122/tRPC-App.git
 
 ## 3. Install Dependencies
 ```bash
-npm install --workspaces
+pnpm i
 ```
 ## 4. Setting up Prisma & Generat Prisma Client
 ```bash
