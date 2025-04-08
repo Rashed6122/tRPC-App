@@ -26,9 +26,6 @@ function App() {
           <div className='max-w-md max-h-md mx-auto grid gap-y-4 mt-8'>
             <Link to="/">
             </Link>
-            <Link to="/addOne" className="font-bold mx-auto">
-              Add ToDo
-            </Link>
             <Outlet/>
           </div>
         </div>

@@ -8,8 +8,18 @@ const todoRouter = trpc.router(
             const todos = await prisma.todo.findMany()
             return todos
         }),
+        getOne: trpc.procedure
+        .input(z.object({id: z.string()}))
+        .query(async({input})=>{
+            const todo = await prisma.todo.findUnique({
+                where: {
+                    id : input.id
+                }
+            })
+            return todo
+        }),
         create: trpc.procedure
-        .input(z.object({title: z.string()}))
+        .input(z.object({title: z.string().min(3)}))
         .mutation(({input})=>{
             const title  = input.title
             return prisma.todo.create({

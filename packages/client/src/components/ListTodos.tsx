@@ -2,11 +2,12 @@ import { trpc } from "../lib/trpc"
 
 export default function ListTodos() {
   const response = trpc.todo.allTodos.useQuery()
+  const response2 =  trpc.todo.getOne.useQuery({id: 'cm8ljfdwv0003v2nkaw1t7uxj'})
   const deleteMutation = trpc.todo.delete.useMutation()
   const updateMutation = trpc.todo.update.useMutation()
   const trpcContext = trpc.useUtils() 
   
-
+  //return <h2>{response2.data?.title}</h2>
   if (response.isError){
     return <h2>Error...</h2>
   }

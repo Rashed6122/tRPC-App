@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as AddOneImport } from './routes/addOne'
 import { Route as IndexImport } from './routes/index'
+import { Route as TodosTodoIdImport } from './routes/todos/$todoId'
 
 // Create/Update Routes
 
@@ -25,6 +26,12 @@ const AddOneRoute = AddOneImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TodosTodoIdRoute = TodosTodoIdImport.update({
+  id: '/todos/$todoId',
+  path: '/todos/$todoId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,6 +53,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AddOneImport
       parentRoute: typeof rootRoute
     }
+    '/todos/$todoId': {
+      id: '/todos/$todoId'
+      path: '/todos/$todoId'
+      fullPath: '/todos/$todoId'
+      preLoaderRoute: typeof TodosTodoIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -54,36 +68,41 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/addOne': typeof AddOneRoute
+  '/todos/$todoId': typeof TodosTodoIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/addOne': typeof AddOneRoute
+  '/todos/$todoId': typeof TodosTodoIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/addOne': typeof AddOneRoute
+  '/todos/$todoId': typeof TodosTodoIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/addOne'
+  fullPaths: '/' | '/addOne' | '/todos/$todoId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/addOne'
-  id: '__root__' | '/' | '/addOne'
+  to: '/' | '/addOne' | '/todos/$todoId'
+  id: '__root__' | '/' | '/addOne' | '/todos/$todoId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddOneRoute: typeof AddOneRoute
+  TodosTodoIdRoute: typeof TodosTodoIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddOneRoute: AddOneRoute,
+  TodosTodoIdRoute: TodosTodoIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,7 +116,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/addOne"
+        "/addOne",
+        "/todos/$todoId"
       ]
     },
     "/": {
@@ -105,6 +125,9 @@ export const routeTree = rootRoute
     },
     "/addOne": {
       "filePath": "addOne.tsx"
+    },
+    "/todos/$todoId": {
+      "filePath": "todos/$todoId.tsx"
     }
   }
 }

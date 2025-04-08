@@ -1,6 +1,7 @@
 import { trpc } from "../lib/trpc"
 import { useForm } from '@tanstack/react-form'
 import type { AnyFieldApi } from '@tanstack/react-form'
+import { useNavigate } from "@tanstack/react-router"
 
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
@@ -17,7 +18,7 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 export default function AddTodoForm() {
     const addTodoMutation = trpc.todo.create.useMutation()
     const trpcContext = trpc.useUtils() 
-
+    const navigate = useNavigate({ from: '/addOne' })
     const form = useForm({
       defaultValues: {
         Todo: '',
@@ -26,7 +27,7 @@ export default function AddTodoForm() {
         addTodoMutation.mutate({title: value.Todo},
           {onSuccess: ()=>{
             trpcContext.todo.allTodos.invalidate()
-            form.reset();
+            navigate({ to: '/' })
           }}
         )
       },
