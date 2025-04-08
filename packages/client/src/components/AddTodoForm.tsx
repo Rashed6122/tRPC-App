@@ -50,14 +50,9 @@ export default function AddTodoForm() {
                 onChange: ({ value }) =>
                   !value
                     ? 'Task is required'
+                    : value.length < 3
+                      ? 'Task must be at least 3 characters'
                       : undefined,
-                onChangeAsyncDebounceMs: 500,
-                onChangeAsync: async ({ value }) => {
-                  await new Promise((resolve) => setTimeout(resolve, 500))
-                  return (
-                    value.includes('error') && 'No "error" allowed in first name'
-                  )
-                },
               }}
               children={(field) => {
                 return (

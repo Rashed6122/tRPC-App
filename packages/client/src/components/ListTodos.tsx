@@ -1,13 +1,13 @@
+import { useNavigate } from "@tanstack/react-router"
 import { trpc } from "../lib/trpc"
 
 export default function ListTodos() {
   const response = trpc.todo.allTodos.useQuery()
-  const response2 =  trpc.todo.getOne.useQuery({id: 'cm8ljfdwv0003v2nkaw1t7uxj'})
   const deleteMutation = trpc.todo.delete.useMutation()
   const updateMutation = trpc.todo.update.useMutation()
   const trpcContext = trpc.useUtils() 
+  const navigate = useNavigate({ from: '/' })
   
-  //return <h2>{response2.data?.title}</h2>
   if (response.isError){
     return <h2>Error...</h2>
   }
@@ -22,7 +22,14 @@ export default function ListTodos() {
           <p className="flex-grow">
             {todo.title}
           </p>
-
+          <button
+            className='text-white bg-blue-600 px-2 py-1 rounded text-sm cursor-pointer hover:text-black'
+            onClick={()=> {
+              navigate({ to: '/todos/$todoId' , params: { todoId : todo.id } })
+            }}
+          >
+            {'View'}
+          </button>
           <button
             className='text-white bg-green-600 px-2 py-1 rounded text-sm hover:line-through cursor-pointer hover:text-black'
             onClick={() => updateMutation.mutate({id: todo.id , isCompleted: !todo.isCompleted},

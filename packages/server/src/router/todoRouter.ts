@@ -1,11 +1,15 @@
 import { prisma } from "../lib/prismaClient";
 import trpc from "../lib/trpc";
-import{ z }from "zod";
+import{ boolean, z }from "zod";
 
 const todoRouter = trpc.router(
     {
         allTodos: trpc.procedure.query(async()=>{
-            const todos = await prisma.todo.findMany()
+            const todos = await prisma.todo.findMany({
+                include: {
+                    subTasks : true,
+                },
+            })
             return todos
         }),
         getOne: trpc.procedure
