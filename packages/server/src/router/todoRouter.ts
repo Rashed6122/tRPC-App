@@ -1,13 +1,21 @@
 import { prisma } from "../lib/prismaClient";
 import trpc from "../lib/trpc";
-import{ boolean, z }from "zod";
+import{  z }from "zod";
 
 const todoRouter = trpc.router(
     {
         allTodos: trpc.procedure.query(async()=>{
             const todos = await prisma.todo.findMany({
-                include: {
-                    subTasks : true,
+                select: {
+                    id: true,
+                    title: true,
+                    isCompleted: true,
+                    createdAt: true,
+                    subTasks :{
+                        select: {
+                            item: true,
+                        }
+                    }
                 },
             })
             return todos
@@ -18,19 +26,38 @@ const todoRouter = trpc.router(
             const todo = await prisma.todo.findUnique({
                 where: {
                     id : input.id
-                }
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    isCompleted: true,
+                    createdAt: true,
+                    subTasks: {
+                        select: {
+                            item: true,
+                        }
+                    }
+                },
             })
             return todo
         }),
         create: trpc.procedure
-        .input(z.object({title: z.string().min(3)}))
+        .input(z.object({title: z.string().min(3) , subTasks: z.array(z.object({item: z.string().min(3)})).optional()}))
         .mutation(({input})=>{
             const title  = input.title
             return prisma.todo.create({
                 data: {
                     title: title,
                     isCompleted: false, 
-                }
+                    subTasks: {
+                        create: input.subTasks?.map((subTask) => ({
+                            item: subTask.item,
+                        })),
+                    },  
+                },
+                include: {
+                    subTasks : true,
+                },
             })
         }),
         delete: trpc.procedure
@@ -44,16 +71,32 @@ const todoRouter = trpc.router(
             })
         }),
         update: trpc.procedure
-        .input(z.object({id: z.string() , isCompleted : z.boolean()}))
+        .input(z.object({id: z.string() , isCompleted : z.boolean() , subTasks: z.array(z.object({item: z.string().min(3)})).optional()}))
         .mutation(({input})=>{
-            const id  = input.id
+            if (input.subTasks){
+                return prisma.todo.update({
+                    where: {
+                        id : input.id
+                    },
+                    data:{
+                        isCompleted : input.isCompleted,
+                        subTasks: {
+                            create: input.subTasks?.map((subTask) => ({
+                                item: subTask.item,
+                            })),
+                    }},
+                    include: {
+                        subTasks : true,
+                    },
+                })
+            }
             return prisma.todo.update({
                 where: {
                     id : input.id
                 },
                 data:{
-                    isCompleted : input.isCompleted
-                }
+                    isCompleted : input.isCompleted,
+                },
             })
         }),
     }
