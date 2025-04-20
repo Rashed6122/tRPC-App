@@ -1,13 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
-import ViewTodo from '../../components/ViewTodo'
+import { createFileRoute } from "@tanstack/react-router";
+import ViewTodo from "../../components/ViewTodo";
 
-export const Route = createFileRoute('/todos/$todoId')({
+export const Route = createFileRoute("/todos/$todoId")({
   component: todo,
-})
+});
 
 function todo() {
-  const { todoId } = Route.useParams()
-  return <div>
-    <ViewTodo id = {todoId}/>
-  </div>
+  const { todoId } = Route.useParams();
+  return <ViewTodo id={todoId} />;
 }

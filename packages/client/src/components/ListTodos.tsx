@@ -15,12 +15,12 @@ export default function ListTodos() {
     return <h2>Loading...</h2>;
   }
   return (
-    <ul className="menu lg:menu-horizontal bg-base-200 rounded-box lg:mb-64 space-y-2">
+    <ul className="menu lg:menu-horizontal bg-base-200 rounded-box lg:mb-64 space-y-2 w-56 lg:w-full mx-auto">
       {response.data?.map((todo) => {
         return (
           <li key={todo.id}>
             <details open>
-              <summary className="flex justify-between items-center bg-slate-400 py-2 px-3 space-x-2 p-2 bg-base-100 rounded-lg shadow-md hover:bg-base-200">
+              <summary className="flex justify-between items-center bg-slate-400 py-2 px-3 space-x-2 p-2  rounded-lg shadow-md hover:bg-base-200">
                 <span className="flex-grow">
                   {todo.title + "  "}
                   {todo.subTasks.length || null}
