@@ -24,9 +24,6 @@ function App() {
         <div className="relative min-h-screen md:flex">
           <Aside />
           <div className="flex-1 max-w-xl mx-auto justify-items-center">
-            <div className="text-center text-3xl font-bold text-gray-700 mt-9">
-              <h1>Rashedlogy </h1>
-            </div>
             <div className="max-w-md max-h-md mx-auto gap-y-4 mt-8">
               <Link to="/"></Link>
               <Outlet />

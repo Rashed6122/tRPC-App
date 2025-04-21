@@ -21,10 +21,17 @@ export default function ListTodos() {
           <li key={todo.id}>
             <details open>
               <summary className="flex justify-between items-center bg-slate-400 py-2 px-3 space-x-2 p-2  rounded-lg shadow-md hover:bg-base-200">
-                <span className="flex-grow">
-                  {todo.title + "  "}
-                  {todo.subTasks.length || null}
-                </span>
+                <div className="flex-grow">
+                  <div className="inline-flex items-center gap-2">
+                    <span>{todo.title}</span>
+                    {todo.subTasks.length > 0 && (
+                      <span className="flex items-center justify-center size-6 rounded-full bg-blue-600 text-white text-base">
+                        {todo.subTasks.length}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 <button
                   className="text-white bg-blue-600 px-2 py-1 rounded text-sm cursor-pointer hover:text-black"
                   onClick={() => {
@@ -80,9 +87,21 @@ export default function ListTodos() {
                   </svg>
                 </button>
               </summary>
-              <ul>
+              <ul className="list-disc list-inside ml-4 mt-2">
                 {todo.subTasks.map((subTask) => {
-                  return <li className="ml-4">{subTask.item}</li>;
+                  return (
+                    <div className="flex items-center mb-4">
+                      <input
+                        id="default-checkbox"
+                        type="checkbox"
+                        value=""
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      ></input>
+                      <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        {subTask.item}
+                      </label>
+                    </div>
+                  );
                 })}
               </ul>
             </details>
