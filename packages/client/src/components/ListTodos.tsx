@@ -1,22 +1,37 @@
 import { useNavigate } from "@tanstack/react-router";
 import { trpc } from "../lib/trpc";
+import todosStore from "../store/useTodoStore";
+import { useEffect } from "react";
+import { TiPin } from "react-icons/ti";
+import { RiUnpinFill } from "react-icons/ri";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Todo } from "../models/Todo";
 
 export default function ListTodos() {
-  const response = trpc.todo.allTodos.useQuery();
+  //const { data, isLoading } = trpc.todo.allTodos.useQuery();
+  const { todos, setTodos, todosList, setTodosList } = todosStore();
   const deleteMutation = trpc.todo.delete.useMutation();
   const updateMutation = trpc.todo.update.useMutation();
   const trpcContext = trpc.useUtils();
+  const { data, isLoading } = useQuery({
+    queryKey: ["todos"],
+    queryFn: () => {
+      const res = trpc.todo.allTodos.useQuery();
+      return res.data;
+    },
+  });
   const navigate = useNavigate({ from: "/" });
+  useEffect(() => {
+    if (data) {
+      setTodos(data);
+      setTodosList(data);
+    }
+  }, [data]);
+  if (isLoading) return <div>Loading...</div>;
 
-  if (response.isError) {
-    return <h2>Error...</h2>;
-  }
-  if (response.isLoading) {
-    return <h2>Loading...</h2>;
-  }
   return (
     <ul className="menu lg:menu-horizontal bg-base-200 rounded-box lg:mb-64 space-y-2 w-56 lg:w-full mx-auto">
-      {response.data?.map((todo) => {
+      {todos.map((todo) => {
         return (
           <li key={todo.id}>
             <details open>
@@ -30,6 +45,36 @@ export default function ListTodos() {
                       </span>
                     )}
                   </div>
+                </div>
+                <div
+                  onClick={() => {
+                    setTodosList(
+                      todosList.map((todoItem) => {
+                        if (todoItem.id === todo.id) {
+                          return { ...todoItem, pinned: !todoItem.pinned };
+                        }
+                        return todoItem;
+                      })
+                    );
+                    updateMutation.mutate(
+                      {
+                        id: todo.id,
+                        pinned: !todo.pinned,
+                        isCompleted: todo.isCompleted,
+                      },
+                      {
+                        onSuccess: () => {
+                          trpcContext.todo.allTodos.invalidate();
+                        },
+                      }
+                    );
+                  }}
+                >
+                  {todo.pinned ? (
+                    <RiUnpinFill className="text-blue-600" />
+                  ) : (
+                    <TiPin className="text-blue-600" />
+                  )}
                 </div>
 
                 <button
@@ -47,7 +92,11 @@ export default function ListTodos() {
                   className="text-white bg-green-600 px-2 py-1 rounded text-sm hover:line-through cursor-pointer hover:text-black"
                   onClick={() =>
                     updateMutation.mutate(
-                      { id: todo.id, isCompleted: !todo.isCompleted },
+                      {
+                        id: todo.id,
+                        isCompleted: !todo.isCompleted,
+                        pinned: todo.pinned,
+                      },
                       {
                         onSuccess: () => {
                           trpcContext.todo.allTodos.invalidate();
@@ -64,7 +113,14 @@ export default function ListTodos() {
                       { id: todo.id },
                       {
                         onSuccess: () => {
-                          trpcContext.todo.allTodos.invalidate();
+                          setTodos(
+                            todos.filter((todoItem) => todoItem.id !== todo.id)
+                          );
+                          setTodosList(
+                            todosList.filter(
+                              (todoItem) => todoItem.id !== todo.id
+                            )
+                          );
                         },
                       }
                     )

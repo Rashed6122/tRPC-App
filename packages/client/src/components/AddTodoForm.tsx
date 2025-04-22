@@ -2,6 +2,7 @@ import { trpc } from "../lib/trpc";
 import { useForm, AnyFieldApi } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
+import todosStore from "../store/useTodoStore";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
@@ -16,7 +17,9 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 }
 
 export default function AddTodoForm() {
+  const { todosList, setTodosList } = todosStore();
   const addTodoMutation = trpc.todo.create.useMutation();
+  const categories = trpc.category.getAll.useQuery();
   const trpcContext = trpc.useUtils();
   const navigate = useNavigate({ from: "/addOne" });
 
@@ -27,23 +30,43 @@ export default function AddTodoForm() {
         item: z.string().min(3, { message: "Task must be at least 3" }),
       })
     ),
+    category: z.string(),
+    pinned: z.boolean(),
   });
 
   const form = useForm({
     defaultValues: {
       Todo: "",
       subTask: [{ item: "" }],
+      category: "",
+      pinned: false,
     },
     validators: {
       onChange: schema,
     },
 
     onSubmit: async ({ value }) => {
+      setTodosList([
+        ...todosList,
+        {
+          id: "",
+          title: value.Todo,
+          isCompleted: false,
+          createdAt: "",
+          subTasks: value.subTask,
+          pinned: value.pinned,
+          categoryId: value.category,
+        },
+      ]);
       addTodoMutation.mutate(
-        { title: value.Todo, subTasks: value.subTask },
+        {
+          title: value.Todo,
+          subTasks: value.subTask,
+          pinned: value.pinned,
+          categoryId: value.category,
+        },
         {
           onSuccess: () => {
-            trpcContext.todo.allTodos.invalidate();
             navigate({ to: "/" });
           },
         }
@@ -70,6 +93,40 @@ export default function AddTodoForm() {
         >
           <div>
             <form.Field
+              name="category"
+              children={(field) => {
+                return (
+                  <div>
+                    <label
+                      htmlFor={field.name}
+                      className="block text-sm/6 font-medium text-gray-900"
+                    >
+                      Category:
+                    </label>
+                    <select
+                      id="categories"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full px-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    >
+                      <option selected>Choose a Category</option>
+                      {categories.data?.map((category) => {
+                        return (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    <FieldInfo field={field} />
+                  </div>
+                );
+              }}
+            />
+          </div>
+          <div>
+            <form.Field
               name="Todo"
               children={(field) => {
                 return (
@@ -78,7 +135,7 @@ export default function AddTodoForm() {
                       htmlFor={field.name}
                       className="block text-sm/6 font-medium text-gray-900"
                     >
-                      Title:{" "}
+                      Title:
                     </label>
                     <div className="mt-2">
                       <input
@@ -154,6 +211,29 @@ export default function AddTodoForm() {
               );
             }}
           </form.Field>
+          <div>
+            <form.Field
+              name="pinned"
+              children={(field) => {
+                return (
+                  <div>
+                    <div className="flex items-center mb-4">
+                      <input
+                        id="default-checkbox"
+                        type="checkbox"
+                        checked={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.checked)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      ></input>
+                      <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        Pin this task
+                      </label>
+                    </div>
+                  </div>
+                );
+              }}
+            />
+          </div>
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}
             children={([canSubmit, isSubmitting]) => (

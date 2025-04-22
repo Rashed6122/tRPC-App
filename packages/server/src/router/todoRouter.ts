@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prismaClient";
 import trpc from "../lib/trpc";
-import{  z }from "zod";
+import{ z }from "zod";
 
 const todoRouter = trpc.router(
     {
@@ -10,7 +10,9 @@ const todoRouter = trpc.router(
                     id: true,
                     title: true,
                     isCompleted: true,
+                    categoryId: true,
                     createdAt: true,
+                    pinned: true,
                     subTasks :{
                         select: {
                             item: true,
@@ -19,6 +21,29 @@ const todoRouter = trpc.router(
                 },
             })
             return todos
+        }),
+        
+        getAllCategories: trpc.procedure.query(async()=>{
+            const categories = await prisma.category.findMany({
+                select: {
+                    id: true,
+                    name: true,
+                    todos: {
+                        select: {
+                            id: true,
+                            title: true,
+                            isCompleted: true,
+                            createdAt: true,
+                            subTasks :{
+                                select: {
+                                    item: true,
+                                }
+                            }
+                        },
+                    },
+                },
+            })
+            return categories
         }),
         getOne: trpc.procedure
         .input(z.object({id: z.string()}))
@@ -42,23 +67,36 @@ const todoRouter = trpc.router(
             return todo
         }),
         create: trpc.procedure
-        .input(z.object({title: z.string().min(3) , subTasks: z.array(z.object({item: z.string().min(3)})).optional()}))
+        .input(z.object({title: z.string().min(3) , pinned : z.boolean(), categoryId: z.string(), subTasks: z.array(z.object({item: z.string().min(3)})).optional()}))
         .mutation(({input})=>{
             const title  = input.title
+            const pinned = input.pinned
             return prisma.todo.create({
                 data: {
                     title: title,
                     isCompleted: false, 
+                    pinned: pinned,
+                    categoryId: input.categoryId,
                     subTasks: {
                         create: input.subTasks?.map((subTask) => ({
                             item: subTask.item,
                         })),
                     },  
                 },
-                include: {
-                    subTasks : true,
-                },
-            })
+                select: {
+                    id: true,
+                    title: true,
+                    isCompleted: true,
+                    createdAt: true,
+                    subTasks: {
+                        select: {
+                            item: true,
+                        }
+                    },
+                    pinned: true,
+                    categoryId: true,
+            }
+        })
         }),
         delete: trpc.procedure
         .input(z.object({id: z.string()}))
@@ -71,7 +109,7 @@ const todoRouter = trpc.router(
             })
         }),
         update: trpc.procedure
-        .input(z.object({id: z.string() , isCompleted : z.boolean() , subTasks: z.array(z.object({item: z.string().min(3)})).optional()}))
+        .input(z.object({id: z.string() , isCompleted : z.boolean() ,pinned : z.boolean() ,subTasks: z.array(z.object({item: z.string().min(3)})).optional()}))
         .mutation(({input})=>{
             if (input.subTasks){
                 return prisma.todo.update({
@@ -80,6 +118,7 @@ const todoRouter = trpc.router(
                     },
                     data:{
                         isCompleted : input.isCompleted,
+                        pinned: input.pinned,
                         subTasks: {
                             create: input.subTasks?.map((subTask) => ({
                                 item: subTask.item,
@@ -95,6 +134,7 @@ const todoRouter = trpc.router(
                     id : input.id
                 },
                 data:{
+                    pinned: input.pinned,
                     isCompleted : input.isCompleted,
                 },
             })

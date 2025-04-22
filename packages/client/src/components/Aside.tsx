@@ -1,4 +1,19 @@
+import { useEffect } from "react";
+import { trpc } from "../lib/trpc";
+import CategoryStore from "../store/useCategoryStore";
+import todosStore from "../store/useTodoStore";
+
 function Aside() {
+  const { setTodos, todosList, todos } = todosStore();
+  const { categories, setCategories } = CategoryStore();
+  const { data } = trpc.category.getAll.useQuery();
+
+  useEffect(() => {
+    if (data) {
+      setCategories(data);
+    }
+  }, [data, setCategories]);
+
   return (
     <div className="relative min-h-screen md:flex">
       <div className="bg-gray-800 text-gray-100 flex justify-between md:hidden">
@@ -45,29 +60,28 @@ function Aside() {
 
         <nav>
           <a
-            href="#"
+            onClick={() => {
+              console.log(todosList, todos);
+              setTodos(todosList);
+            }}
             className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
           >
-            Home
+            All Tasks
           </a>
-          <a
-            href=""
-            className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
-          >
-            Work
-          </a>
-          <a
-            href=""
-            className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
-          >
-            Bugs
-          </a>
-          <a
-            href=""
-            className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
-          >
-            Q Bank
-          </a>
+          {categories.map((category) => {
+            return (
+              <a
+                onClick={() => {
+                  setTodos(
+                    todosList.filter((todo) => todo.categoryId === category.id)
+                  );
+                }}
+                className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
+              >
+                {category.name}
+              </a>
+            );
+          })}
         </nav>
       </div>
     </div>
