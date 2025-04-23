@@ -6,17 +6,17 @@ import { TiPin } from "react-icons/ti";
 import { RiUnpinFill } from "react-icons/ri";
 import { Todo } from "../models/Todo";
 
-export default function ListTodos({ todolist }: { todolist: Todo[] }) {
-  //const { data, isLoading } = trpc.todo.allTodos.useQuery();
+export default function ListTodos() {
+  const { data, isLoading } = trpc.todo.allTodos.useQuery();
   const { todos, setTodos, todosList, setTodosList } = todosStore();
   const deleteMutation = trpc.todo.delete.useMutation();
   const trpcContext = trpc.useUtils();
   useEffect(() => {
-    if (todolist) {
-      setTodos(todolist);
-      setTodosList(todolist);
+    if (data) {
+      setTodos(data);
+      setTodosList(data);
     }
-  }, [todolist]);
+  }, [data]);
 
   const updateMutation = trpc.todo.update.useMutation({
     onMutate: async (updatedTodo) => {
@@ -50,10 +50,17 @@ export default function ListTodos({ todolist }: { todolist: Todo[] }) {
     },
   });
   const navigate = useNavigate({ from: "/" });
+  if (isLoading) {
+    return (
+      <div className="text-center text-3xl font-bold text-gray-700 my-9">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <ul className="menu lg:menu-horizontal bg-base-200 rounded-box lg:mb-64 space-y-2 w-56 lg:w-full mx-auto">
-      {todolist.map((todo) => {
+      {todos.map((todo) => {
         return (
           <li key={todo.id}>
             <details open>
