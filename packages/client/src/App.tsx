@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Outlet } from "@tanstack/react-router";
 import Aside from "./components/Aside";
 import Pinned from "./components/Pinned";
+import SignIn from "./Pages/SignIn";
 
 function App() {
   const [queryClient] = useState(() => new QueryClient());
@@ -31,7 +32,9 @@ function App() {
           </div>
           <Pinned />
         </div>
+        {/* <Register /> */}
         {/* <SignIn /> */}
+        {/* <PhoneNumberWithCountryCode /> */}
       </QueryClientProvider>
     </trpc.Provider>
   );

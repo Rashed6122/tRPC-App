@@ -4,34 +4,56 @@ import todosStore from "../store/useTodoStore";
 import { useEffect } from "react";
 import { TiPin } from "react-icons/ti";
 import { RiUnpinFill } from "react-icons/ri";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Todo } from "../models/Todo";
 
-export default function ListTodos() {
+export default function ListTodos({ todolist }: { todolist: Todo[] }) {
   //const { data, isLoading } = trpc.todo.allTodos.useQuery();
   const { todos, setTodos, todosList, setTodosList } = todosStore();
   const deleteMutation = trpc.todo.delete.useMutation();
-  const updateMutation = trpc.todo.update.useMutation();
   const trpcContext = trpc.useUtils();
-  const { data, isLoading } = useQuery({
-    queryKey: ["todos"],
-    queryFn: () => {
-      const res = trpc.todo.allTodos.useQuery();
-      return res.data;
+  useEffect(() => {
+    if (todolist) {
+      setTodos(todolist);
+      setTodosList(todolist);
+    }
+  }, [todolist]);
+
+  const updateMutation = trpc.todo.update.useMutation({
+    onMutate: async (updatedTodo) => {
+      await trpcContext.todo.allTodos.cancel();
+
+      const previousTodos = trpcContext.todo.allTodos.getData();
+
+      trpcContext.todo.allTodos.setData(undefined, (old) =>
+        old?.map((todo) =>
+          todo.id === updatedTodo.id
+            ? {
+                ...todo,
+                pinned: updatedTodo.pinned,
+                isCompleted: updatedTodo.isCompleted,
+              }
+            : todo
+        )
+      );
+
+      return { previousTodos };
+    },
+
+    onError: (err, variables, context) => {
+      if (context?.previousTodos) {
+        trpcContext.todo.allTodos.setData(undefined, context.previousTodos);
+      }
+    },
+
+    onSettled: () => {
+      trpcContext.todo.allTodos.invalidate();
     },
   });
   const navigate = useNavigate({ from: "/" });
-  useEffect(() => {
-    if (data) {
-      setTodos(data);
-      setTodosList(data);
-    }
-  }, [data]);
-  if (isLoading) return <div>Loading...</div>;
 
   return (
     <ul className="menu lg:menu-horizontal bg-base-200 rounded-box lg:mb-64 space-y-2 w-56 lg:w-full mx-auto">
-      {todos.map((todo) => {
+      {todolist.map((todo) => {
         return (
           <li key={todo.id}>
             <details open>
@@ -91,18 +113,11 @@ export default function ListTodos() {
                 <button
                   className="text-white bg-green-600 px-2 py-1 rounded text-sm hover:line-through cursor-pointer hover:text-black"
                   onClick={() =>
-                    updateMutation.mutate(
-                      {
-                        id: todo.id,
-                        isCompleted: !todo.isCompleted,
-                        pinned: todo.pinned,
-                      },
-                      {
-                        onSuccess: () => {
-                          trpcContext.todo.allTodos.invalidate();
-                        },
-                      }
-                    )
+                    updateMutation.mutate({
+                      id: todo.id,
+                      isCompleted: !todo.isCompleted,
+                      pinned: todo.pinned,
+                    })
                   }
                 >
                   {todo.isCompleted ? "Complete" : "Incomplete"}

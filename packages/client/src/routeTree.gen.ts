@@ -11,11 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TrashImport } from './routes/trash'
 import { Route as AddOneImport } from './routes/addOne'
 import { Route as IndexImport } from './routes/index'
 import { Route as TodosTodoIdImport } from './routes/todos/$todoId'
 
 // Create/Update Routes
+
+const TrashRoute = TrashImport.update({
+  id: '/trash',
+  path: '/trash',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AddOneRoute = AddOneImport.update({
   id: '/addOne',
@@ -53,6 +60,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AddOneImport
       parentRoute: typeof rootRoute
     }
+    '/trash': {
+      id: '/trash'
+      path: '/trash'
+      fullPath: '/trash'
+      preLoaderRoute: typeof TrashImport
+      parentRoute: typeof rootRoute
+    }
     '/todos/$todoId': {
       id: '/todos/$todoId'
       path: '/todos/$todoId'
@@ -68,12 +82,14 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/addOne': typeof AddOneRoute
+  '/trash': typeof TrashRoute
   '/todos/$todoId': typeof TodosTodoIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/addOne': typeof AddOneRoute
+  '/trash': typeof TrashRoute
   '/todos/$todoId': typeof TodosTodoIdRoute
 }
 
@@ -81,27 +97,30 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/addOne': typeof AddOneRoute
+  '/trash': typeof TrashRoute
   '/todos/$todoId': typeof TodosTodoIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/addOne' | '/todos/$todoId'
+  fullPaths: '/' | '/addOne' | '/trash' | '/todos/$todoId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/addOne' | '/todos/$todoId'
-  id: '__root__' | '/' | '/addOne' | '/todos/$todoId'
+  to: '/' | '/addOne' | '/trash' | '/todos/$todoId'
+  id: '__root__' | '/' | '/addOne' | '/trash' | '/todos/$todoId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddOneRoute: typeof AddOneRoute
+  TrashRoute: typeof TrashRoute
   TodosTodoIdRoute: typeof TodosTodoIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddOneRoute: AddOneRoute,
+  TrashRoute: TrashRoute,
   TodosTodoIdRoute: TodosTodoIdRoute,
 }
 
@@ -117,6 +136,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/addOne",
+        "/trash",
         "/todos/$todoId"
       ]
     },
@@ -125,6 +145,9 @@ export const routeTree = rootRoute
     },
     "/addOne": {
       "filePath": "addOne.tsx"
+    },
+    "/trash": {
+      "filePath": "trash.tsx"
     },
     "/todos/$todoId": {
       "filePath": "todos/$todoId.tsx"

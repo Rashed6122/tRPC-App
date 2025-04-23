@@ -6,6 +6,33 @@ const todoRouter = trpc.router(
     {
         allTodos: trpc.procedure.query(async()=>{
             const todos = await prisma.todo.findMany({
+                where: {
+                    deletedAt: null,
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    isCompleted: true,
+                    categoryId: true,
+                    createdAt: true,
+                    pinned: true,
+                    subTasks :{
+                        select: {
+                            item: true,
+                        }
+                    }
+                },
+            })
+            return todos
+        }),
+
+        trash: trpc.procedure.query(async()=>{
+            const todos = await prisma.todo.findMany({
+                where: {
+                    deletedAt: {
+                        not: null
+                    },
+                },
                 select: {
                     id: true,
                     title: true,

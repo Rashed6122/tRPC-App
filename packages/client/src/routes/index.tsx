@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import ListTodos from "../components/ListTodos";
+import ListTodos from "../Pages/ListTodos";
 import AddTodo from "../components/AddTodo";
+import Home from "../Pages/Home";
 
 export const Route: any = createFileRoute("/")({
   component: Index,
@@ -9,14 +10,7 @@ export const Route: any = createFileRoute("/")({
 function Index() {
   return (
     <>
-      <div className="text-center text-3xl font-bold text-gray-700 my-9">
-        <h1>ToDo List </h1>
-      </div>
-      <div className="grid gap-y-4 px-4">
-        <AddTodo />
-        <hr className="border-t-4 rounded-sm"></hr>
-        <ListTodos />
-      </div>
+      <Home />
     </>
   );
 }
