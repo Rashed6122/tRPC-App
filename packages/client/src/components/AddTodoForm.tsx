@@ -175,7 +175,12 @@ export default function AddTodoForm() {
                                       subField.handleChange(e.target.value)
                                     }
                                   />
-                                  <button className="text-red-500 hover:text-white hover:bg-red-500 p-1 rounded">
+                                  <button
+                                    onClick={() => {
+                                      field.removeValue(i);
+                                    }}
+                                    className="text-red-500 hover:text-white hover:bg-red-500 p-1 rounded"
+                                  >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
                                       fill="none"

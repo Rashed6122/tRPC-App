@@ -4,12 +4,12 @@ import todosStore from "../store/useTodoStore";
 import { useEffect } from "react";
 import { TiPin } from "react-icons/ti";
 import { RiUnpinFill } from "react-icons/ri";
-import { Todo } from "../models/Todo";
+import TrashStore from "../store/useTrashStore";
 
 export default function ListTodos() {
   const { data, isLoading } = trpc.todo.allTodos.useQuery();
   const { todos, setTodos, todosList, setTodosList } = todosStore();
-  const deleteMutation = trpc.todo.delete.useMutation();
+  const { trashList, setTrashList } = TrashStore();
   const trpcContext = trpc.useUtils();
   useEffect(() => {
     if (data) {
@@ -17,6 +17,29 @@ export default function ListTodos() {
       setTodosList(data);
     }
   }, [data]);
+  const deleteMutation = trpc.todo.delete.useMutation({
+    onMutate: async (deletedTodo) => {
+      await trpcContext.todo.allTodos.cancel();
+
+      const previousTodos = trpcContext.todo.allTodos.getData();
+
+      trpcContext.todo.allTodos.setData(undefined, (old) =>
+        old?.filter((todo) => todo.id !== deletedTodo.id)
+      );
+
+      return { previousTodos };
+    },
+
+    onError: (err, variables, context) => {
+      if (context?.previousTodos) {
+        trpcContext.todo.allTodos.setData(undefined, context.previousTodos);
+      }
+    },
+
+    onSettled: () => {
+      trpcContext.todo.allTodos.invalidate();
+    },
+  });
 
   const updateMutation = trpc.todo.update.useMutation({
     onMutate: async (updatedTodo) => {
@@ -54,6 +77,13 @@ export default function ListTodos() {
     return (
       <div className="text-center text-3xl font-bold text-gray-700 my-9">
         Loading...
+      </div>
+    );
+  }
+  if (todos.length === 0) {
+    return (
+      <div className="text-center text-3xl font-bold text-gray-700 my-9">
+        Great Job You have no tasks to do
       </div>
     );
   }
@@ -130,23 +160,24 @@ export default function ListTodos() {
                   {todo.isCompleted ? "Complete" : "Incomplete"}
                 </button>
                 <button
-                  onClick={() =>
+                  onClick={() => {
+                    setTrashList([...trashList, todo]);
+                    setTodos(
+                      todos.filter((todoItem) => todoItem.id !== todo.id)
+                    );
+                    setTodosList(
+                      todosList.filter((todoItem) => todoItem.id !== todo.id)
+                    );
+                    console.log(trashList, todos);
                     deleteMutation.mutate(
                       { id: todo.id },
                       {
                         onSuccess: () => {
-                          setTodos(
-                            todos.filter((todoItem) => todoItem.id !== todo.id)
-                          );
-                          setTodosList(
-                            todosList.filter(
-                              (todoItem) => todoItem.id !== todo.id
-                            )
-                          );
+                          trpcContext.todo.allTodos.invalidate();
                         },
                       }
-                    )
-                  }
+                    );
+                  }}
                   className="text-red-500 hover:text-white hover:bg-red-500 p-1 rounded"
                 >
                   <svg

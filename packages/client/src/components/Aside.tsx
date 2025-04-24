@@ -9,6 +9,7 @@ function Aside() {
   const { categories, setCategories } = CategoryStore();
   const { data } = trpc.category.getAll.useQuery();
   const navigate = useNavigate({ from: "/" });
+  const navigate2 = useNavigate({ from: "/trash" });
 
   useEffect(() => {
     if (data) {
@@ -65,6 +66,7 @@ function Aside() {
             onClick={() => {
               console.log(todosList, todos);
               setTodos(todosList);
+              navigate2({ to: "/" });
             }}
             className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
           >

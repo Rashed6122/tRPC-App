@@ -49,29 +49,6 @@ const todoRouter = trpc.router(
             })
             return todos
         }),
-        
-        getAllCategories: trpc.procedure.query(async()=>{
-            const categories = await prisma.category.findMany({
-                select: {
-                    id: true,
-                    name: true,
-                    todos: {
-                        select: {
-                            id: true,
-                            title: true,
-                            isCompleted: true,
-                            createdAt: true,
-                            subTasks :{
-                                select: {
-                                    item: true,
-                                }
-                            }
-                        },
-                    },
-                },
-            })
-            return categories
-        }),
         getOne: trpc.procedure
         .input(z.object({id: z.string()}))
         .query(async({input})=>{
@@ -129,9 +106,35 @@ const todoRouter = trpc.router(
         .input(z.object({id: z.string()}))
         .mutation(({input})=>{
             const id  = input.id
+            return prisma.todo.update({
+                where: {
+                    id : input.id
+                },
+                data:{
+                    deletedAt: new Date(),
+                }
+            })
+        }),
+        destory: trpc.procedure
+        .input(z.object({id: z.string()}))
+        .mutation(({input})=>{
+            const id  = input.id
             return prisma.todo.delete({
                 where: {
                     id : input.id
+                },
+            })
+        }),
+        restore: trpc.procedure
+        .input(z.object({id: z.string()}))
+        .mutation(({input})=>{
+            const id  = input.id
+            return prisma.todo.update({
+                where: {
+                    id : input.id
+                },
+                data:{
+                    deletedAt: null,
                 }
             })
         }),
