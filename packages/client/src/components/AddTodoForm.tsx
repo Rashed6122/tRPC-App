@@ -2,7 +2,7 @@ import { trpc } from "../lib/trpc";
 import { useForm, AnyFieldApi } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
-import todosStore from "../store/useTodoStore";
+import useCreateTodo from "../hooks/todos/useCreateTodo";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
@@ -17,18 +17,17 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 }
 
 export default function AddTodoForm() {
-  const { todosList, setTodosList } = todosStore();
-  const addTodoMutation = trpc.todo.create.useMutation();
+  const addTodoMutation = useCreateTodo();
   const categories = trpc.category.getAll.useQuery();
   const trpcContext = trpc.useUtils();
-  const navigate = useNavigate({ from: "/addOne" });
+  const navigate = useNavigate();
 
   const schema = z.object({
     Todo: z.string().min(3, { message: "Title must be at least 3" }),
     subTask: z.array(
       z.object({
         item: z.string().min(3, { message: "Task must be at least 3" }),
-      })
+      }),
     ),
     category: z.string(),
     pinned: z.boolean(),
@@ -46,18 +45,6 @@ export default function AddTodoForm() {
     },
 
     onSubmit: async ({ value }) => {
-      setTodosList([
-        ...todosList,
-        {
-          id: "",
-          title: value.Todo,
-          isCompleted: false,
-          createdAt: "",
-          subTasks: value.subTask,
-          pinned: value.pinned,
-          categoryId: value.category,
-        },
-      ]);
       addTodoMutation.mutate(
         {
           title: value.Todo,
@@ -69,7 +56,7 @@ export default function AddTodoForm() {
           onSuccess: () => {
             navigate({ to: "/" });
           },
-        }
+        },
       );
       console.log(value);
     },

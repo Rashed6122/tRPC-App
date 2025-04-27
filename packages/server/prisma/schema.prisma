@@ -1,6 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins"]
+  provider     = "prisma-client-js"
+  relationMode = "prisma"
 }
 
 datasource db {
@@ -20,6 +20,8 @@ model Todo {
   category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   categoryId  String?
   pinned      Boolean   @default(false)
+
+  @@index([categoryId])
 }
 
 model Category {

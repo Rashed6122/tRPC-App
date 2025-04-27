@@ -1,21 +1,12 @@
-import { useEffect } from "react";
 import { trpc } from "../lib/trpc";
-import CategoryStore from "../store/useCategoryStore";
-import todosStore from "../store/useTodoStore";
 import { useNavigate } from "@tanstack/react-router";
 
 function Aside() {
-  const { setTodos, todosList, todos } = todosStore();
-  const { categories, setCategories } = CategoryStore();
-  const { data } = trpc.category.getAll.useQuery();
+  const { data: categories } = trpc.category.getAll.useQuery(undefined, {
+    initialData: [],
+  });
   const navigate = useNavigate({ from: "/" });
   const navigate2 = useNavigate({ from: "/trash" });
-
-  useEffect(() => {
-    if (data) {
-      setCategories(data);
-    }
-  }, [data, setCategories]);
 
   return (
     <div className="relative min-h-screen md:flex">
@@ -64,8 +55,8 @@ function Aside() {
         <nav>
           <a
             onClick={() => {
-              console.log(todosList, todos);
-              setTodos(todosList);
+              // console.log(todosList, todos);
+              // setTodos(todosList);
               navigate2({ to: "/" });
             }}
             className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
@@ -76,9 +67,9 @@ function Aside() {
             return (
               <a
                 onClick={() => {
-                  setTodos(
-                    todosList.filter((todo) => todo.categoryId === category.id)
-                  );
+                  // setTodos(
+                  //   todosList.filter((todo) => todo.categoryId === category.id),
+                  // );
                 }}
                 className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
               >

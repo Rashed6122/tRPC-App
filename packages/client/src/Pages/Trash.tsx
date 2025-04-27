@@ -1,14 +1,10 @@
-import { useEffect } from "react";
 import { trpc } from "../lib/trpc";
-import TrashStore from "../store/useTrashStore";
-import todosStore from "../store/useTodoStore";
 import { Todo } from "../models/Todo";
-import { useNavigate } from "@tanstack/react-router";
 
 function Trash() {
-  const { data, isLoading } = trpc.todo.trash.useQuery();
-  const { trashList, setTrashList } = TrashStore();
-  const { todos, setTodos, todosList, setTodosList } = todosStore();
+  const { data: trashList, isLoading } = trpc.todo.trash.useQuery(undefined, {
+    initialData: [],
+  });
   const trpcContext = trpc.useUtils();
 
   const restoreMutation = trpc.todo.restore.useMutation({
@@ -16,6 +12,7 @@ function Trash() {
       await trpcContext.todo.allTodos.cancel();
 
       const previousTodos = trpcContext.todo.allTodos.getData();
+      const trashList = trpcContext.todo.trash.getData() ?? [];
 
       trpcContext.todo.allTodos.setData(undefined, (old) => [
         ...(old || []),
@@ -42,7 +39,7 @@ function Trash() {
       const previousTodos = trpcContext.todo.allTodos.getData();
 
       trpcContext.todo.allTodos.setData(undefined, (old) =>
-        old?.filter((todo) => todo.id !== deletedTodo.id)
+        old?.filter((todo) => todo.id !== deletedTodo.id),
       );
 
       return { previousTodos };
@@ -58,11 +55,6 @@ function Trash() {
       trpcContext.todo.allTodos.invalidate();
     },
   });
-  useEffect(() => {
-    if (data) {
-      setTrashList(data);
-    }
-  }, [data]);
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -93,14 +85,9 @@ function Trash() {
                           { id: todo.id },
                           {
                             onSuccess: () => {
-                              setTrashList(
-                                trashList.filter(
-                                  (todoItem) => todoItem.id !== todo.id
-                                )
-                              );
                               trpcContext.todo.allTodos.invalidate();
                             },
-                          }
+                          },
                         );
                       }}
                       className="text-white bg-red-800 px-2 py-1 rounded text-sm cursor-pointer hover:text-black"
@@ -114,17 +101,9 @@ function Trash() {
                           { id: todo.id },
                           {
                             onSuccess: () => {
-                              setTrashList(
-                                trashList.filter(
-                                  (todoItem) => todoItem.id !== todo.id
-                                )
-                              );
-                              setTodos([...todos, todo]);
-                              setTodosList([...todosList, todo]);
-                              console.log(todosList, todos);
                               trpcContext.todo.allTodos.invalidate();
                             },
-                          }
+                          },
                         );
                       }}
                       className="text-white bg-blue-600 px-2 py-1 rounded text-sm cursor-pointer hover:text-black"

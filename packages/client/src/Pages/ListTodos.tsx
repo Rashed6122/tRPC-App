@@ -1,30 +1,23 @@
 import { useNavigate } from "@tanstack/react-router";
 import { trpc } from "../lib/trpc";
-import todosStore from "../store/useTodoStore";
-import { useEffect } from "react";
 import { TiPin } from "react-icons/ti";
 import { RiUnpinFill } from "react-icons/ri";
-import TrashStore from "../store/useTrashStore";
+import { TrashIcon } from "../icons/trash";
 
 export default function ListTodos() {
-  const { data, isLoading } = trpc.todo.allTodos.useQuery();
-  const { todos, setTodos, todosList, setTodosList } = todosStore();
-  const { trashList, setTrashList } = TrashStore();
+  const { data: todos, isLoading } = trpc.todo.allTodos.useQuery(undefined, {
+    initialData: [],
+  });
   const trpcContext = trpc.useUtils();
-  useEffect(() => {
-    if (data) {
-      setTodos(data);
-      setTodosList(data);
-    }
-  }, [data]);
-  const deleteMutation = trpc.todo.delete.useMutation({
+
+  const deleteMutation = trpc.todo.deleteTodo.useMutation({
     onMutate: async (deletedTodo) => {
       await trpcContext.todo.allTodos.cancel();
 
       const previousTodos = trpcContext.todo.allTodos.getData();
 
       trpcContext.todo.allTodos.setData(undefined, (old) =>
-        old?.filter((todo) => todo.id !== deletedTodo.id)
+        old?.filter((todo) => todo.id !== deletedTodo.id),
       );
 
       return { previousTodos };
@@ -55,8 +48,8 @@ export default function ListTodos() {
                 pinned: updatedTodo.pinned,
                 isCompleted: updatedTodo.isCompleted,
               }
-            : todo
-        )
+            : todo,
+        ),
       );
 
       return { previousTodos };
@@ -107,14 +100,6 @@ export default function ListTodos() {
                 </div>
                 <div
                   onClick={() => {
-                    setTodosList(
-                      todosList.map((todoItem) => {
-                        if (todoItem.id === todo.id) {
-                          return { ...todoItem, pinned: !todoItem.pinned };
-                        }
-                        return todoItem;
-                      })
-                    );
                     updateMutation.mutate(
                       {
                         id: todo.id,
@@ -125,7 +110,7 @@ export default function ListTodos() {
                         onSuccess: () => {
                           trpcContext.todo.allTodos.invalidate();
                         },
-                      }
+                      },
                     );
                   }}
                 >
@@ -160,40 +145,28 @@ export default function ListTodos() {
                   {todo.isCompleted ? "Complete" : "Incomplete"}
                 </button>
                 <button
+                  disabled={!todo.id}
                   onClick={() => {
-                    setTrashList([...trashList, todo]);
-                    setTodos(
-                      todos.filter((todoItem) => todoItem.id !== todo.id)
-                    );
-                    setTodosList(
-                      todosList.filter((todoItem) => todoItem.id !== todo.id)
-                    );
-                    console.log(trashList, todos);
+                    // setTrashList([...trashList, todo]);
+                    // setTodos(
+                    //   todos.filter((todoItem) => todoItem.id !== todo.id),
+                    // );
+                    // setTodosList(
+                    //   todosList.filter((todoItem) => todoItem.id !== todo.id),
+                    // );
+                    // console.log(trashList, todos);
                     deleteMutation.mutate(
                       { id: todo.id },
                       {
                         onSuccess: () => {
                           trpcContext.todo.allTodos.invalidate();
                         },
-                      }
+                      },
                     );
                   }}
-                  className="text-red-500 hover:text-white hover:bg-red-500 p-1 rounded"
+                  className="text-red-500 hover:text-white hover:bg-red-500 p-1 rounded disabled:opacity-50 disabled:hover:bg-transparent"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6 "
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                    />
-                  </svg>
+                  <TrashIcon />
                 </button>
               </summary>
               <ul className="list-disc list-inside ml-4 mt-2">

@@ -1,5 +1,3 @@
-import React from "react";
-
 function CreatedAt({ createdAt }: { createdAt: string | undefined }) {
   const formattedDate = createdAt
     ? new Date(createdAt).toLocaleString("en-US", {

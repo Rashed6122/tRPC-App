@@ -1,8 +1,8 @@
-import todosStore from "../store/useTodoStore";
+import { trpc } from "../lib/trpc";
 import MiniCard from "./MiniCard";
 function Pinned() {
-  const { todosList } = todosStore();
-  const pinnedList = todosList.filter((todo) => todo.pinned);
+  const { data: todosList } = trpc.todo.allTodos.useQuery();
+  const pinnedList = todosList?.filter((todo) => todo.pinned) ?? [];
   return (
     <div className="relative min-h-screen md:flex">
       <div className="bg-gray-800 text-gray-100 flex justify-between md:hidden">

@@ -1,20 +1,8 @@
+import { Todo } from "../models/Todo";
 import CreatedAt from "./CreatedAt";
 import SubTasks from "./SubTasks";
 
-function TaskCard({
-  todo,
-}: {
-  todo:
-    | {
-        id: string;
-        title: string;
-        isCompleted: boolean;
-        createdAt: string;
-        subTasks: { item: string }[];
-      }
-    | null
-    | undefined;
-}) {
+function TaskCard({ todo }: { todo: Todo | null | undefined }) {
   const subtasks = todo?.subTasks.map((subTask) => subTask.item) || [];
   return (
     <div className="bg-white shadow-xl rounded-2xl p-6 max-w-sm w-full">
