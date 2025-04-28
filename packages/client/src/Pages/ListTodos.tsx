@@ -5,7 +5,11 @@ import { RiUnpinFill } from "react-icons/ri";
 import { TrashIcon } from "../icons/trash";
 
 export default function ListTodos() {
-  const { data: todos, isLoading } = trpc.todo.allTodos.useQuery(undefined, {
+  const {
+    data: todos,
+    isLoading,
+    error,
+  } = trpc.todo.allTodos.useQuery(undefined, {
     initialData: [],
   });
   const trpcContext = trpc.useUtils();
@@ -17,7 +21,7 @@ export default function ListTodos() {
       const previousTodos = trpcContext.todo.allTodos.getData();
 
       trpcContext.todo.allTodos.setData(undefined, (old) =>
-        old?.filter((todo) => todo.id !== deletedTodo.id),
+        old?.filter((todo) => todo.id !== deletedTodo.id)
       );
 
       return { previousTodos };
@@ -48,8 +52,8 @@ export default function ListTodos() {
                 pinned: updatedTodo.pinned,
                 isCompleted: updatedTodo.isCompleted,
               }
-            : todo,
-        ),
+            : todo
+        )
       );
 
       return { previousTodos };
@@ -110,7 +114,7 @@ export default function ListTodos() {
                         onSuccess: () => {
                           trpcContext.todo.allTodos.invalidate();
                         },
-                      },
+                      }
                     );
                   }}
                 >
@@ -161,7 +165,7 @@ export default function ListTodos() {
                         onSuccess: () => {
                           trpcContext.todo.allTodos.invalidate();
                         },
-                      },
+                      }
                     );
                   }}
                   className="text-red-500 hover:text-white hover:bg-red-500 p-1 rounded disabled:opacity-50 disabled:hover:bg-transparent"

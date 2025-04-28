@@ -19,7 +19,6 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 export default function AddTodoForm() {
   const addTodoMutation = useCreateTodo();
   const categories = trpc.category.getAll.useQuery();
-  const trpcContext = trpc.useUtils();
   const navigate = useNavigate();
 
   const schema = z.object({
@@ -27,7 +26,7 @@ export default function AddTodoForm() {
     subTask: z.array(
       z.object({
         item: z.string().min(3, { message: "Task must be at least 3" }),
-      }),
+      })
     ),
     category: z.string(),
     pinned: z.boolean(),
@@ -45,7 +44,7 @@ export default function AddTodoForm() {
     },
 
     onSubmit: async ({ value }) => {
-      addTodoMutation.mutate(
+      const data = addTodoMutation.mutate(
         {
           title: value.Todo,
           subTasks: value.subTask,
@@ -56,9 +55,8 @@ export default function AddTodoForm() {
           onSuccess: () => {
             navigate({ to: "/" });
           },
-        },
+        }
       );
-      console.log(value);
     },
   });
 
