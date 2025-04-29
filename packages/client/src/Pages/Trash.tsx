@@ -9,27 +9,14 @@ function Trash() {
 
   const restoreMutation = trpc.todo.restore.useMutation({
     onMutate: async (restoredTodo) => {
-      await trpcContext.todo.allTodos.cancel();
-
-      const previousTodos = trpcContext.todo.allTodos.getData();
       const trashList = trpcContext.todo.trash.getData() ?? [];
-
+      trpcContext.todo.trash.setData(undefined, (old) => [
+        ...(old || []).filter((todo) => todo.id !== restoredTodo.id),
+      ]);
       trpcContext.todo.allTodos.setData(undefined, (old) => [
         ...(old || []),
         trashList.find((todo) => todo.id === restoredTodo.id) as Todo,
       ]);
-
-      return { previousTodos };
-    },
-
-    onError: (err, variables, context) => {
-      if (context?.previousTodos) {
-        trpcContext.todo.allTodos.setData(undefined, context.previousTodos);
-      }
-    },
-
-    onSettled: () => {
-      trpcContext.todo.allTodos.invalidate();
     },
   });
   const DestroyMutation = trpc.todo.destory.useMutation({
@@ -39,7 +26,7 @@ function Trash() {
       const previousTodos = trpcContext.todo.allTodos.getData();
 
       trpcContext.todo.allTodos.setData(undefined, (old) =>
-        old?.filter((todo) => todo.id !== deletedTodo.id),
+        old?.filter((todo) => todo.id !== deletedTodo.id)
       );
 
       return { previousTodos };
@@ -87,7 +74,7 @@ function Trash() {
                             onSuccess: () => {
                               trpcContext.todo.allTodos.invalidate();
                             },
-                          },
+                          }
                         );
                       }}
                       className="text-white bg-red-800 px-2 py-1 rounded text-sm cursor-pointer hover:text-black"
@@ -103,7 +90,7 @@ function Trash() {
                             onSuccess: () => {
                               trpcContext.todo.allTodos.invalidate();
                             },
-                          },
+                          }
                         );
                       }}
                       className="text-white bg-blue-600 px-2 py-1 rounded text-sm cursor-pointer hover:text-black"

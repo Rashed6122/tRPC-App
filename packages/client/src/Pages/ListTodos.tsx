@@ -5,36 +5,17 @@ import { RiUnpinFill } from "react-icons/ri";
 import { TrashIcon } from "../icons/trash";
 
 export default function ListTodos() {
-  const {
-    data: todos,
-    isLoading,
-    error,
-  } = trpc.todo.allTodos.useQuery(undefined, {
+  const { data: todos, isLoading } = trpc.todo.allTodos.useQuery(undefined, {
     initialData: [],
+    staleTime: Infinity,
   });
   const trpcContext = trpc.useUtils();
 
   const deleteMutation = trpc.todo.deleteTodo.useMutation({
     onMutate: async (deletedTodo) => {
-      await trpcContext.todo.allTodos.cancel();
-
-      const previousTodos = trpcContext.todo.allTodos.getData();
-
-      trpcContext.todo.allTodos.setData(undefined, (old) =>
-        old?.filter((todo) => todo.id !== deletedTodo.id)
-      );
-
-      return { previousTodos };
-    },
-
-    onError: (err, variables, context) => {
-      if (context?.previousTodos) {
-        trpcContext.todo.allTodos.setData(undefined, context.previousTodos);
-      }
-    },
-
-    onSettled: () => {
-      trpcContext.todo.allTodos.invalidate();
+      trpcContext.todo.allTodos.setData(undefined, (old) => [
+        ...(old || []).filter((todo) => todo.id !== deletedTodo.id),
+      ]);
     },
   });
 
@@ -57,16 +38,6 @@ export default function ListTodos() {
       );
 
       return { previousTodos };
-    },
-
-    onError: (err, variables, context) => {
-      if (context?.previousTodos) {
-        trpcContext.todo.allTodos.setData(undefined, context.previousTodos);
-      }
-    },
-
-    onSettled: () => {
-      trpcContext.todo.allTodos.invalidate();
     },
   });
   const navigate = useNavigate({ from: "/" });
@@ -112,7 +83,7 @@ export default function ListTodos() {
                       },
                       {
                         onSuccess: () => {
-                          trpcContext.todo.allTodos.invalidate();
+                          // trpcContext.todo.allTodos.invalidate();
                         },
                       }
                     );
@@ -151,19 +122,11 @@ export default function ListTodos() {
                 <button
                   disabled={!todo.id}
                   onClick={() => {
-                    // setTrashList([...trashList, todo]);
-                    // setTodos(
-                    //   todos.filter((todoItem) => todoItem.id !== todo.id),
-                    // );
-                    // setTodosList(
-                    //   todosList.filter((todoItem) => todoItem.id !== todo.id),
-                    // );
-                    // console.log(trashList, todos);
                     deleteMutation.mutate(
                       { id: todo.id },
                       {
                         onSuccess: () => {
-                          trpcContext.todo.allTodos.invalidate();
+                          trpcContext.todo.trash.invalidate();
                         },
                       }
                     );

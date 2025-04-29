@@ -8,6 +8,17 @@ function Aside() {
     initialData: [],
   });
   const navigate = useNavigate();
+  const trpcContext = trpc.useUtils();
+  const fillterTodos = async (categoryId: string) => {
+    await trpcContext.todo.allTodos.refetch();
+    if (categoryId) {
+      trpcContext.todo.allTodos.setData(undefined, (old) => [
+        ...(old || []).filter((todo) => todo.categoryId === categoryId),
+      ]);
+    }
+    const data = trpcContext.todo.allTodos.getData() ?? [];
+    console.log("data", data);
+  };
 
   return (
     <div className="relative min-h-screen md:flex">
@@ -44,7 +55,7 @@ function Aside() {
         <nav>
           <a
             onClick={() => {
-              // fillterTodos(undefined);
+              fillterTodos("");
               navigate({ to: "/" });
             }}
             className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
@@ -55,7 +66,7 @@ function Aside() {
             return (
               <a
                 onClick={() => {
-                  // fillterTodos(category.id);
+                  fillterTodos(category.id);
                 }}
                 className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
               >
