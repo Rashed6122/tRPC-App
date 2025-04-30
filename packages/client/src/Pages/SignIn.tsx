@@ -1,6 +1,7 @@
 import { AnyFieldApi, useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import todoLogo from "../assets/todolist.png";
+import { trpc } from "../lib/trpc";
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
     <>
@@ -18,6 +19,15 @@ function SignIn() {
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string(),
   });
+
+  const createUserMutation = trpc.auth.login.useMutation({
+    onMutate: async (newUser) => {
+      console.log("onMutate", newUser);
+    },
+    onSuccess: (data) => {
+      console.log("onSuccess", data);
+    },
+  });
   const form = useForm({
     defaultValues: {
       email: "",
@@ -27,7 +37,10 @@ function SignIn() {
       onChange: schema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
+      const data = createUserMutation.mutate({
+        email: value.email,
+        password: value.password,
+      });
     },
   });
   return (

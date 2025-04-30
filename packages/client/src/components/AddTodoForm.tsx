@@ -28,6 +28,7 @@ export default function AddTodoForm() {
         item: z.string().min(3, { message: "Task must be at least 3" }),
       })
     ),
+
     category: z.string(),
     pinned: z.boolean(),
   });

@@ -22,7 +22,7 @@ function App() {
   return (
     <trpc.Provider queryClient={queryClient} client={trpcClient}>
       <QueryClientProvider client={queryClient}>
-        <div className="relative min-h-screen md:flex">
+        {/* <div className="relative min-h-screen md:flex">
           <Aside />
           <div className="flex-1 max-w-xl mx-auto justify-items-center">
             <div className="max-w-md max-h-md mx-auto gap-y-4 mt-8">
@@ -31,9 +31,9 @@ function App() {
             </div>
           </div>
           <Pinned />
-        </div>
+        </div> */}
         {/* <Register /> */}
-        {/* <SignIn /> */}
+        <SignIn />
         {/* <PhoneNumberWithCountryCode /> */}
       </QueryClientProvider>
     </trpc.Provider>

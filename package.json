@@ -25,13 +25,17 @@
   "author": "Rashed",
   "license": "ISC",
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
     "daisyui": "^5.0.27",
     "turbo": "^2.5.0"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.501.0",
     "react-icons": "^5.5.0",
     "tailwind-merge": "^3.2.0",

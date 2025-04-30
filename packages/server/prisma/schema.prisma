@@ -40,3 +40,12 @@ model SubTask {
   title     Todo     @relation(fields: [titleId], references: [id], onDelete: Cascade)
   titleId   String
 }
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  name      String
+  password  String
+}

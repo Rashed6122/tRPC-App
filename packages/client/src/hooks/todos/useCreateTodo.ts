@@ -18,7 +18,6 @@ const useCreateTodo = () => {
         ];
       });
     },
-    onError: () => {},
   });
 };
 

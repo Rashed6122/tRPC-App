@@ -18,3 +18,13 @@ export const updateSchema = z.object({
     })
 export const optionalIdSchema = z.object({
       id: z.string().optional()})
+export const loginSchema = z.object({
+      email: z.string().email(),
+      password: z.string(),
+    });
+export const registerSchema = z.object({
+      email: z.string().email(),
+      password: z.string(),
+      name: z.string().min(3),
+    });
+

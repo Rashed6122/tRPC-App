@@ -3,12 +3,11 @@ import { trpc } from "../lib/trpc";
 import { TiPin } from "react-icons/ti";
 import { RiUnpinFill } from "react-icons/ri";
 import { TrashIcon } from "../icons/trash";
+import { useGetTodos } from "../hooks/todos/useGetTodos";
+import useUpdateTodo from "../hooks/todos/useUpdateTodo";
 
 export default function ListTodos() {
-  const { data: todos, isLoading } = trpc.todo.allTodos.useQuery(undefined, {
-    initialData: [],
-    staleTime: Infinity,
-  });
+  const { data: todos, isLoading } = useGetTodos();
   const trpcContext = trpc.useUtils();
 
   const deleteMutation = trpc.todo.deleteTodo.useMutation({
@@ -19,27 +18,7 @@ export default function ListTodos() {
     },
   });
 
-  const updateMutation = trpc.todo.update.useMutation({
-    onMutate: async (updatedTodo) => {
-      await trpcContext.todo.allTodos.cancel();
-
-      const previousTodos = trpcContext.todo.allTodos.getData();
-
-      trpcContext.todo.allTodos.setData(undefined, (old) =>
-        old?.map((todo) =>
-          todo.id === updatedTodo.id
-            ? {
-                ...todo,
-                pinned: updatedTodo.pinned,
-                isCompleted: updatedTodo.isCompleted,
-              }
-            : todo
-        )
-      );
-
-      return { previousTodos };
-    },
-  });
+  const updateMutation = useUpdateTodo();
   const navigate = useNavigate({ from: "/" });
   if (isLoading) {
     return (
