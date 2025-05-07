@@ -8,6 +8,7 @@ export const createSchema = z.object({
       pinned: z.boolean(),
       categoryId: z.string(),
       subTasks: z.array(z.object({ item: z.string().min(3) })).optional(),
+      userId : z.string().cuid2(),
     });
 
 export const updateSchema = z.object({
@@ -23,8 +24,12 @@ export const loginSchema = z.object({
       password: z.string(),
     });
 export const registerSchema = z.object({
-      email: z.string().email(),
-      password: z.string(),
-      name: z.string().min(3),
+      name: z.string().min(3, { message: "Name must be at least 3" }),
+      email: z.string().email({ message: "Invalid email address" }),
+      age: z.number().positive({ message: "Age must be at least 1" }),
+      phone: z.string().min(10, {
+        message: "Phone number must be at least 10 digits",
+      }),
+      password: z.string().min(6, { message: "Password must be at least 6" }),
     });
 

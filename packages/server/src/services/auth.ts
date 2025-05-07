@@ -30,7 +30,7 @@ export const loginService = async(input: z.infer<typeof loginSchema>) =>{
 
 
 export const registerService = async(input: z.infer<typeof registerSchema>) =>{
-    const { email, name , password } = input;
+    const { email, name , password , age , phone } = input;
     const SECRET_KEY = 'your_jwt_secret';
     const user = await prisma.user.findUnique({
         where: {
@@ -44,9 +44,11 @@ export const registerService = async(input: z.infer<typeof registerSchema>) =>{
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await prisma.user.create({
             data: {
-                email: email,
-                name: name,
+                email,
+                name,
                 password: hashedPassword,
+                age,
+                phone,
             },
         });
         const token = jwt.sign({ id: newUser.id }, SECRET_KEY, { expiresIn: '1h' });

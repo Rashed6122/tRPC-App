@@ -1,18 +1,22 @@
+import { useGetCategories } from "../hooks/categories/useGetCategories";
+import { useUserStore } from "../hooks/userStore/useUserStore";
 import LogoIcon from "../icons/logo";
 import { TrashIcon } from "../icons/trash";
 import { trpc } from "../lib/trpc";
 import { useNavigate } from "@tanstack/react-router";
+import { UserCard } from "./UserCard";
 
 function Aside() {
-  const { data: categories } = trpc.category.getAll.useQuery(undefined, {
-    initialData: [],
-  });
+  const { data: categories } = useGetCategories();
+  const user = useUserStore((state) => state.user);
   const navigate = useNavigate();
   const trpcContext = trpc.useUtils();
   const fillterTodos = async (categoryId: string) => {
-    await trpcContext.todo.allTodos.refetch();
+    await trpcContext.todo.allTodos.refetch({
+      id: user?.id || "test",
+    });
     if (categoryId) {
-      trpcContext.todo.allTodos.setData(undefined, (old) => [
+      trpcContext.todo.allTodos.setData({ id: user?.id || "test" }, (old) => [
         ...(old || []).filter((todo) => todo.categoryId === categoryId),
       ]);
     }
@@ -44,9 +48,10 @@ function Aside() {
       </div>
 
       <div className="sidebar bg-blue-800 text-blue-100 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+        <UserCard name={user?.name} />
         <a
           className="text-white flex items-center space-x-2 px-4"
-          onClick={() => navigate({ to: "/" })}
+          onClick={() => navigate({ to: "/auth" })}
         >
           <LogoIcon />
           <span className="text-2xl font-extrabold">Categories</span>
@@ -56,7 +61,7 @@ function Aside() {
           <a
             onClick={() => {
               fillterTodos("");
-              navigate({ to: "/" });
+              navigate({ to: "/auth" });
             }}
             className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
           >
@@ -76,7 +81,7 @@ function Aside() {
           })}
           <a
             className="flex  justify-between py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white "
-            onClick={() => navigate({ to: "/trash" })}
+            onClick={() => navigate({ to: "/auth/trash" })}
           >
             Trash List
             <TrashIcon />

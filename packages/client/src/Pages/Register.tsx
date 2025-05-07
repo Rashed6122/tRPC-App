@@ -2,6 +2,7 @@ import { useForm, AnyFieldApi } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import todoLogo from "../assets/todolist.png";
+import { trpc } from "../lib/trpc";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
@@ -16,7 +17,15 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 }
 
 export default function Register() {
-  const navigate = useNavigate({ from: "/addOne" });
+  const navigate = useNavigate();
+  const addUserMutation = trpc.auth.register.useMutation({
+    onMutate: async (newUser) => {
+      console.log("onMutate", newUser);
+    },
+    onSuccess: (data) => {
+      console.log("onSuccess", data);
+    },
+  });
 
   const schema = z
     .object({
@@ -55,7 +64,20 @@ export default function Register() {
     },
 
     onSubmit: async ({ value }) => {
-      console.log(value);
+      const data = addUserMutation.mutate(
+        {
+          name: value.name,
+          email: value.email,
+          age: value.age,
+          phone: value.phone,
+          password: value.password,
+        },
+        {
+          onSuccess: () => {
+            navigate({ to: "/login" });
+          },
+        }
+      );
     },
   });
 
@@ -268,7 +290,7 @@ export default function Register() {
                 disabled={!canSubmit}
                 className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                {isSubmitting ? "..." : "Submit"}
+                {isSubmitting ? "..." : "Create Account"}
               </button>
             )}
           />

@@ -5,21 +5,23 @@ import { RiUnpinFill } from "react-icons/ri";
 import { TrashIcon } from "../icons/trash";
 import { useGetTodos } from "../hooks/todos/useGetTodos";
 import useUpdateTodo from "../hooks/todos/useUpdateTodo";
+import { useUserStore } from "../hooks/userStore/useUserStore";
 
 export default function ListTodos() {
   const { data: todos, isLoading } = useGetTodos();
   const trpcContext = trpc.useUtils();
+  const user = useUserStore((state) => state.user);
 
   const deleteMutation = trpc.todo.deleteTodo.useMutation({
     onMutate: async (deletedTodo) => {
-      trpcContext.todo.allTodos.setData(undefined, (old) => [
+      trpcContext.todo.allTodos.setData({ id: user?.id || "test" }, (old) => [
         ...(old || []).filter((todo) => todo.id !== deletedTodo.id),
       ]);
     },
   });
 
   const updateMutation = useUpdateTodo();
-  const navigate = useNavigate({ from: "/" });
+  const navigate = useNavigate();
   if (isLoading) {
     return (
       <div className="text-center text-3xl font-bold text-gray-700 my-9">
@@ -36,7 +38,7 @@ export default function ListTodos() {
   }
 
   return (
-    <ul className="menu lg:menu-horizontal bg-base-200 rounded-box lg:mb-64 space-y-2 w-56 lg:w-full mx-auto">
+    <ul className="menu lg:menu-horizontal bg-base-200 rounded-box space-y-2 w-56 lg:w-full mx-auto">
       {todos.map((todo) => {
         return (
           <li key={todo.id}>
@@ -79,7 +81,7 @@ export default function ListTodos() {
                   className="text-white bg-blue-600 px-2 py-1 rounded text-sm cursor-pointer hover:text-black"
                   onClick={() => {
                     navigate({
-                      to: "/todos/$todoId",
+                      to: "/auth/todos/$todoId",
                       params: { todoId: todo.id },
                     });
                   }}

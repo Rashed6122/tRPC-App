@@ -16,7 +16,7 @@ function MiniCard({
 }) {
   const subtasks = todo?.subTasks.map((subTask) => subTask.item) || [];
   return (
-    <div className="bg-slate-400 shadow-xl rounded-2xl p-6 max-w-sm w-full">
+    <div className="bg-slate-400 shadow-xl rounded-2xl p-6 max-w-64  w-full">
       <h2 className="text-2xl font-bold text-gray-800 mb-2">{todo?.title}</h2>
       <SubTasks subTasks={subtasks} />
       <p

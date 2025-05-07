@@ -1,45 +1,38 @@
+import { useUserStore } from "../hooks/userStore/useUserStore";
 import { trpc } from "../lib/trpc";
 import { Todo } from "../models/Todo";
 
 function Trash() {
-  const { data: trashList, isLoading } = trpc.todo.trash.useQuery(undefined, {
-    initialData: [],
-  });
+  const user = useUserStore((state) => state.user);
+  const { data: trashList, isLoading } = trpc.todo.trash.useQuery(
+    { id: user?.id || "cmachm7w60002v2wc0djgsrde" },
+    {
+      initialData: [],
+    }
+  );
   const trpcContext = trpc.useUtils();
 
   const restoreMutation = trpc.todo.restore.useMutation({
     onMutate: async (restoredTodo) => {
-      const trashList = trpcContext.todo.trash.getData() ?? [];
-      trpcContext.todo.trash.setData(undefined, (old) => [
-        ...(old || []).filter((todo) => todo.id !== restoredTodo.id),
-      ]);
-      trpcContext.todo.allTodos.setData(undefined, (old) => [
-        ...(old || []),
-        trashList.find((todo) => todo.id === restoredTodo.id) as Todo,
-      ]);
+      trpcContext.todo.trash.setData(
+        { id: user?.id || "cmachm7w60002v2wc0djgsrde" },
+        (old) => [...(old || []).filter((todo) => todo.id !== restoredTodo.id)]
+      );
+      trpcContext.todo.allTodos.setData(
+        { id: user?.id || "cmachm7w60002v2wc0djgsrde" },
+        (old) => [
+          ...(old || []),
+          trashList.find((todo) => todo.id === restoredTodo.id) as Todo,
+        ]
+      );
     },
   });
   const DestroyMutation = trpc.todo.destory.useMutation({
     onMutate: async (deletedTodo) => {
-      await trpcContext.todo.allTodos.cancel();
-
-      const previousTodos = trpcContext.todo.allTodos.getData();
-
-      trpcContext.todo.allTodos.setData(undefined, (old) =>
-        old?.filter((todo) => todo.id !== deletedTodo.id)
+      trpcContext.todo.trash.setData(
+        { id: user?.id || "cmachm7w60002v2wc0djgsrde" },
+        (old) => old?.filter((todo) => todo.id !== deletedTodo.id)
       );
-
-      return { previousTodos };
-    },
-
-    onError: (err, variables, context) => {
-      if (context?.previousTodos) {
-        trpcContext.todo.allTodos.setData(undefined, context.previousTodos);
-      }
-    },
-
-    onSettled: () => {
-      trpcContext.todo.allTodos.invalidate();
     },
   });
   if (isLoading) return <div>Loading...</div>;

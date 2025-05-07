@@ -1,16 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import ListTodos from "../Pages/ListTodos";
-import AddTodo from "../components/AddTodo";
-import Home from "../Pages/Home";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-export const Route: any = createFileRoute("/")({
+export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  return (
-    <>
-      <Home />
-    </>
-  );
+  const navigate = useNavigate();
+
+  return navigate({ to: "/login", params: {} });
 }

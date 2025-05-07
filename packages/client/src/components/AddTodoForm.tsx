@@ -1,8 +1,9 @@
-import { trpc } from "../lib/trpc";
 import { useForm, AnyFieldApi } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import useCreateTodo from "../hooks/todos/useCreateTodo";
+import { useGetCategories } from "../hooks/categories/useGetCategories";
+import { useUserStore } from "../hooks/userStore/useUserStore";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
@@ -17,8 +18,9 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 }
 
 export default function AddTodoForm() {
+  const user = useUserStore((state) => state.user);
   const addTodoMutation = useCreateTodo();
-  const categories = trpc.category.getAll.useQuery();
+  const categories = useGetCategories();
   const navigate = useNavigate();
 
   const schema = z.object({
@@ -51,10 +53,11 @@ export default function AddTodoForm() {
           subTasks: value.subTask,
           pinned: value.pinned,
           categoryId: value.category,
+          userId: user?.id || "cmachm7w60002v2wc0djgsrde",
         },
         {
           onSuccess: () => {
-            navigate({ to: "/" });
+            navigate({ to: "/auth" });
           },
         }
       );
@@ -94,7 +97,7 @@ export default function AddTodoForm() {
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full px-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full px-3 dark:bg-gray-50 dark:border-gray-700 dark:placeholder-gray-100 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
                       <option selected>Choose a Category</option>
                       {categories.data?.map((category) => {
@@ -214,9 +217,9 @@ export default function AddTodoForm() {
                         type="checkbox"
                         checked={field.state.value}
                         onChange={(e) => field.handleChange(e.target.checked)}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-100 dark:border-gray-600"
                       ></input>
-                      <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                      <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-900">
                         Pin this task
                       </label>
                     </div>

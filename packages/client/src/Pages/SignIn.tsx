@@ -2,6 +2,8 @@ import { AnyFieldApi, useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import todoLogo from "../assets/todolist.png";
 import { trpc } from "../lib/trpc";
+import { useNavigate } from "@tanstack/react-router";
+import { useUserStore } from "../hooks/userStore/useUserStore";
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
     <>
@@ -15,6 +17,8 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 }
 
 function SignIn() {
+  const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
   const schema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string(),
@@ -26,6 +30,8 @@ function SignIn() {
     },
     onSuccess: (data) => {
       console.log("onSuccess", data);
+      setUser(data.user);
+      navigate({ to: "/auth" });
     },
   });
   const form = useForm({
@@ -134,6 +140,17 @@ function SignIn() {
             )}
           />
         </form>
+        <p className="mt-10 text-center text-sm/6 text-gray-500">
+          Not a member?
+          <a
+            onClick={() => {
+              navigate({ to: "/register" });
+            }}
+            className="font-semibold text-indigo-600 hover:text-indigo-500"
+          >
+            Create a new account
+          </a>
+        </p>
       </div>
     </div>
   );

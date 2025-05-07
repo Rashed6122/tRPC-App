@@ -7,6 +7,7 @@ import { Link, Outlet } from "@tanstack/react-router";
 import Aside from "./components/Aside";
 import Pinned from "./components/Pinned";
 import SignIn from "./Pages/SignIn";
+import Register from "./Pages/Register";
 
 function App() {
   const [queryClient] = useState(() => new QueryClient());
@@ -22,18 +23,10 @@ function App() {
   return (
     <trpc.Provider queryClient={queryClient} client={trpcClient}>
       <QueryClientProvider client={queryClient}>
-        {/* <div className="relative min-h-screen md:flex">
-          <Aside />
-          <div className="flex-1 max-w-xl mx-auto justify-items-center">
-            <div className="max-w-md max-h-md mx-auto gap-y-4 mt-8">
-              <Link to="/"></Link>
-              <Outlet />
-            </div>
-          </div>
-          <Pinned />
-        </div> */}
+        <Link to="/"></Link>
+        <Outlet />
         {/* <Register /> */}
-        <SignIn />
+        {/* <SignIn /> */}
         {/* <PhoneNumberWithCountryCode /> */}
       </QueryClientProvider>
     </trpc.Provider>

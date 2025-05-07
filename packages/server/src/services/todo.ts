@@ -8,10 +8,11 @@ import { createSchema, updateSchema } from "../schemas/todo";
 /** 
  *  This function fetches all todos from the database that are not deleted. 
  */
-export const todosService = async() =>{ 
+export const todosService = async(id : string) =>{ 
     const todos = await prisma.todo.findMany({
     where: {
       deletedAt: null,
+      userId: id,
     },
     select: {
       id: true,
@@ -33,12 +34,13 @@ export const todosService = async() =>{
 /** 
  *  This function fetches all todos from the database that are deleted. 
  */
-export const trashService = async() =>{
+export const trashService = async(id :string) =>{
     const todos = await prisma.todo.findMany({
         where: {
           deletedAt: {
             not: null,
           },
+          userId: id,
         },
         select: {
           id: true,
@@ -87,7 +89,7 @@ export const getOneService = async(id: string) =>{
  *  This function creates a new todo in the database. 
  */
 export const createService = async(input: z.infer<typeof createSchema>) =>{
-    const { id, title, categoryId, pinned } = input;
+    const { id, title, categoryId, pinned , userId } = input;
     return prisma.todo.create({
       data: {
         id,
@@ -95,6 +97,7 @@ export const createService = async(input: z.infer<typeof createSchema>) =>{
         isCompleted: false,
         pinned,
         categoryId,
+        userId: userId, 
         subTasks: {
           create: input.subTasks?.map((subTask) => ({
             item: subTask.item,
@@ -122,7 +125,7 @@ export const deleteService = async(id: string)=>{
  *  This function permanently deletes a todo from the database. 
  */
 export const destoryService = async(id: string)=>{
-    return prisma.todo.delete({
+    return prisma.todo.deleteMany({
         where: {
           id: id,
         },
