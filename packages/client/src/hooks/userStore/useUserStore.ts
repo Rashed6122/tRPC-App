@@ -7,13 +7,11 @@ type User = {
 }
 
 type UserStore = {
-  user: User | null
-  setUser: (user: User | null) => void
-  clearUser: () => void
+    user?: User
+    setUser: (u: User) => void
 }
 
 export const useUserStore = create<UserStore>((set) => ({
-  user: null,
+  user: undefined,
   setUser: (user) => set({ user }),
-  clearUser: () => set({ user: null }),
 }))

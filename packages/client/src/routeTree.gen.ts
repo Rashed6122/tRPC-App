@@ -13,11 +13,12 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
+import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
-import { Route as AuthIndexImport } from './routes/auth/index'
-import { Route as AuthTrashImport } from './routes/auth/trash'
-import { Route as AuthAddOneImport } from './routes/auth/addOne'
-import { Route as AuthTodosTodoIdImport } from './routes/auth/todos/$todoId'
+import { Route as AuthTrashImport } from './routes/_auth/trash'
+import { Route as AuthHomeImport } from './routes/_auth/home'
+import { Route as AuthAddOneImport } from './routes/_auth/addOne'
+import { Route as AuthTodosTodoIdImport } from './routes/_auth/todos/$todoId'
 
 // Create/Update Routes
 
@@ -33,34 +34,39 @@ const LoginRoute = LoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthRoute = AuthImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthIndexRoute = AuthIndexImport.update({
-  id: '/auth/',
-  path: '/auth/',
-  getParentRoute: () => rootRoute,
+const AuthTrashRoute = AuthTrashImport.update({
+  id: '/trash',
+  path: '/trash',
+  getParentRoute: () => AuthRoute,
 } as any)
 
-const AuthTrashRoute = AuthTrashImport.update({
-  id: '/auth/trash',
-  path: '/auth/trash',
-  getParentRoute: () => rootRoute,
+const AuthHomeRoute = AuthHomeImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 const AuthAddOneRoute = AuthAddOneImport.update({
-  id: '/auth/addOne',
-  path: '/auth/addOne',
-  getParentRoute: () => rootRoute,
+  id: '/addOne',
+  path: '/addOne',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 const AuthTodosTodoIdRoute = AuthTodosTodoIdImport.update({
-  id: '/auth/todos/$todoId',
-  path: '/auth/todos/$todoId',
-  getParentRoute: () => rootRoute,
+  id: '/todos/$todoId',
+  path: '/todos/$todoId',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -72,6 +78,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
     '/login': {
@@ -88,119 +101,135 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterImport
       parentRoute: typeof rootRoute
     }
-    '/auth/addOne': {
-      id: '/auth/addOne'
-      path: '/auth/addOne'
-      fullPath: '/auth/addOne'
+    '/_auth/addOne': {
+      id: '/_auth/addOne'
+      path: '/addOne'
+      fullPath: '/addOne'
       preLoaderRoute: typeof AuthAddOneImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthImport
     }
-    '/auth/trash': {
-      id: '/auth/trash'
-      path: '/auth/trash'
-      fullPath: '/auth/trash'
+    '/_auth/home': {
+      id: '/_auth/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthHomeImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/trash': {
+      id: '/_auth/trash'
+      path: '/trash'
+      fullPath: '/trash'
       preLoaderRoute: typeof AuthTrashImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthImport
     }
-    '/auth/': {
-      id: '/auth/'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/todos/$todoId': {
-      id: '/auth/todos/$todoId'
-      path: '/auth/todos/$todoId'
-      fullPath: '/auth/todos/$todoId'
+    '/_auth/todos/$todoId': {
+      id: '/_auth/todos/$todoId'
+      path: '/todos/$todoId'
+      fullPath: '/todos/$todoId'
       preLoaderRoute: typeof AuthTodosTodoIdImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof AuthImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AuthRouteChildren {
+  AuthAddOneRoute: typeof AuthAddOneRoute
+  AuthHomeRoute: typeof AuthHomeRoute
+  AuthTrashRoute: typeof AuthTrashRoute
+  AuthTodosTodoIdRoute: typeof AuthTodosTodoIdRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthAddOneRoute: AuthAddOneRoute,
+  AuthHomeRoute: AuthHomeRoute,
+  AuthTrashRoute: AuthTrashRoute,
+  AuthTodosTodoIdRoute: AuthTodosTodoIdRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/auth/addOne': typeof AuthAddOneRoute
-  '/auth/trash': typeof AuthTrashRoute
-  '/auth': typeof AuthIndexRoute
-  '/auth/todos/$todoId': typeof AuthTodosTodoIdRoute
+  '/addOne': typeof AuthAddOneRoute
+  '/home': typeof AuthHomeRoute
+  '/trash': typeof AuthTrashRoute
+  '/todos/$todoId': typeof AuthTodosTodoIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/auth/addOne': typeof AuthAddOneRoute
-  '/auth/trash': typeof AuthTrashRoute
-  '/auth': typeof AuthIndexRoute
-  '/auth/todos/$todoId': typeof AuthTodosTodoIdRoute
+  '/addOne': typeof AuthAddOneRoute
+  '/home': typeof AuthHomeRoute
+  '/trash': typeof AuthTrashRoute
+  '/todos/$todoId': typeof AuthTodosTodoIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/auth/addOne': typeof AuthAddOneRoute
-  '/auth/trash': typeof AuthTrashRoute
-  '/auth/': typeof AuthIndexRoute
-  '/auth/todos/$todoId': typeof AuthTodosTodoIdRoute
+  '/_auth/addOne': typeof AuthAddOneRoute
+  '/_auth/home': typeof AuthHomeRoute
+  '/_auth/trash': typeof AuthTrashRoute
+  '/_auth/todos/$todoId': typeof AuthTodosTodoIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | ''
     | '/login'
     | '/register'
-    | '/auth/addOne'
-    | '/auth/trash'
-    | '/auth'
-    | '/auth/todos/$todoId'
+    | '/addOne'
+    | '/home'
+    | '/trash'
+    | '/todos/$todoId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | ''
     | '/login'
     | '/register'
-    | '/auth/addOne'
-    | '/auth/trash'
-    | '/auth'
-    | '/auth/todos/$todoId'
+    | '/addOne'
+    | '/home'
+    | '/trash'
+    | '/todos/$todoId'
   id:
     | '__root__'
     | '/'
+    | '/_auth'
     | '/login'
     | '/register'
-    | '/auth/addOne'
-    | '/auth/trash'
-    | '/auth/'
-    | '/auth/todos/$todoId'
+    | '/_auth/addOne'
+    | '/_auth/home'
+    | '/_auth/trash'
+    | '/_auth/todos/$todoId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
-  AuthAddOneRoute: typeof AuthAddOneRoute
-  AuthTrashRoute: typeof AuthTrashRoute
-  AuthIndexRoute: typeof AuthIndexRoute
-  AuthTodosTodoIdRoute: typeof AuthTodosTodoIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
-  AuthAddOneRoute: AuthAddOneRoute,
-  AuthTrashRoute: AuthTrashRoute,
-  AuthIndexRoute: AuthIndexRoute,
-  AuthTodosTodoIdRoute: AuthTodosTodoIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -214,16 +243,22 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/_auth",
         "/login",
-        "/register",
-        "/auth/addOne",
-        "/auth/trash",
-        "/auth/",
-        "/auth/todos/$todoId"
+        "/register"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/_auth": {
+      "filePath": "_auth.tsx",
+      "children": [
+        "/_auth/addOne",
+        "/_auth/home",
+        "/_auth/trash",
+        "/_auth/todos/$todoId"
+      ]
     },
     "/login": {
       "filePath": "login.tsx"
@@ -231,17 +266,21 @@ export const routeTree = rootRoute
     "/register": {
       "filePath": "register.tsx"
     },
-    "/auth/addOne": {
-      "filePath": "auth/addOne.tsx"
+    "/_auth/addOne": {
+      "filePath": "_auth/addOne.tsx",
+      "parent": "/_auth"
     },
-    "/auth/trash": {
-      "filePath": "auth/trash.tsx"
+    "/_auth/home": {
+      "filePath": "_auth/home.tsx",
+      "parent": "/_auth"
     },
-    "/auth/": {
-      "filePath": "auth/index.tsx"
+    "/_auth/trash": {
+      "filePath": "_auth/trash.tsx",
+      "parent": "/_auth"
     },
-    "/auth/todos/$todoId": {
-      "filePath": "auth/todos/$todoId.tsx"
+    "/_auth/todos/$todoId": {
+      "filePath": "_auth/todos/$todoId.tsx",
+      "parent": "/_auth"
     }
   }
 }

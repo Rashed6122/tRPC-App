@@ -4,6 +4,7 @@ import todoLogo from "../assets/todolist.png";
 import { trpc } from "../lib/trpc";
 import { useNavigate } from "@tanstack/react-router";
 import { useUserStore } from "../hooks/userStore/useUserStore";
+import { useAuth } from "../hooks/useAuth";
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
     <>
@@ -18,7 +19,8 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 
 function SignIn() {
   const navigate = useNavigate();
-  const setUser = useUserStore((state) => state.setUser);
+  const { setUser } = useUserStore();
+  const login = useAuth();
   const schema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string(),
@@ -29,9 +31,9 @@ function SignIn() {
       console.log("onMutate", newUser);
     },
     onSuccess: (data) => {
-      console.log("onSuccess", data);
+      login.login(data.user);
       setUser(data.user);
-      navigate({ to: "/auth" });
+      navigate({ to: "/home" });
     },
   });
   const form = useForm({

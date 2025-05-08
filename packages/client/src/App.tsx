@@ -4,10 +4,6 @@ import { trpc } from "./lib/trpc";
 import { httpBatchLink } from "@trpc/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Outlet } from "@tanstack/react-router";
-import Aside from "./components/Aside";
-import Pinned from "./components/Pinned";
-import SignIn from "./Pages/SignIn";
-import Register from "./Pages/Register";
 
 function App() {
   const [queryClient] = useState(() => new QueryClient());

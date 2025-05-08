@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { RiLogoutBoxRLine } from "react-icons/ri";
+import { useAuth } from "../hooks/useAuth";
 
 type UserCardProps = {
   name: string | null | undefined;
@@ -7,6 +8,7 @@ type UserCardProps = {
 
 export const UserCard = ({ name }: UserCardProps) => {
   const navigate = useNavigate();
+  const { logout, isAuthenticated } = useAuth();
   const initials = (name || "Ahmed Rashed")
     .split(" ")
     .map((word) => word[0])
@@ -29,6 +31,8 @@ export const UserCard = ({ name }: UserCardProps) => {
         size={24}
         color="#3b82f6"
         onClick={() => {
+          logout();
+          console.log("test", isAuthenticated());
           navigate({ to: "/login" });
         }}
       />

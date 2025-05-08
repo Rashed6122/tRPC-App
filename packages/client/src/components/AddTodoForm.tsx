@@ -57,7 +57,7 @@ export default function AddTodoForm() {
         },
         {
           onSuccess: () => {
-            navigate({ to: "/auth" });
+            navigate({ to: "/home" });
           },
         }
       );

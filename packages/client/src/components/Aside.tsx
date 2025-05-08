@@ -5,6 +5,7 @@ import { TrashIcon } from "../icons/trash";
 import { trpc } from "../lib/trpc";
 import { useNavigate } from "@tanstack/react-router";
 import { UserCard } from "./UserCard";
+import { useAuth } from "../hooks/useAuth";
 
 function Aside() {
   const { data: categories } = useGetCategories();
@@ -51,7 +52,9 @@ function Aside() {
         <UserCard name={user?.name} />
         <a
           className="text-white flex items-center space-x-2 px-4"
-          onClick={() => navigate({ to: "/auth" })}
+          onClick={() => {
+            navigate({ to: "/home" });
+          }}
         >
           <LogoIcon />
           <span className="text-2xl font-extrabold">Categories</span>
@@ -61,7 +64,7 @@ function Aside() {
           <a
             onClick={() => {
               fillterTodos("");
-              navigate({ to: "/auth" });
+              navigate({ to: "/home" });
             }}
             className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
           >
@@ -81,7 +84,7 @@ function Aside() {
           })}
           <a
             className="flex  justify-between py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white "
-            onClick={() => navigate({ to: "/auth/trash" })}
+            onClick={() => navigate({ to: "/trash" })}
           >
             Trash List
             <TrashIcon />

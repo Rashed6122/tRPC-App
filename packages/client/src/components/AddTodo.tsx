@@ -7,7 +7,7 @@ export default function AddTodo() {
       <button
         className="bg-blue-500 hover:bg-blue-600 active:bg-blue-500 text-white py-1 px-3 rounded-md"
         onClick={() => {
-          navigate({ to: "/auth/addOne" });
+          navigate({ to: "/addOne" });
         }}
       >
         Add todo
