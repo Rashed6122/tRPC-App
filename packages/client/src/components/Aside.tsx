@@ -3,13 +3,13 @@ import { useUserStore } from "../hooks/userStore/useUserStore";
 import LogoIcon from "../icons/logo";
 import { TrashIcon } from "../icons/trash";
 import { trpc } from "../lib/trpc";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { UserCard } from "./UserCard";
-import { useAuth } from "../hooks/useAuth";
 
 function Aside() {
+  const context = useRouteContext({ from: "/_auth" });
+  const user = context.authentication.getUser();
   const { data: categories } = useGetCategories();
-  const user = useUserStore((state) => state.user);
   const navigate = useNavigate();
   const trpcContext = trpc.useUtils();
   const fillterTodos = async (categoryId: string) => {

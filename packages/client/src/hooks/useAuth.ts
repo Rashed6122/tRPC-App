@@ -1,5 +1,5 @@
 export const  useAuth = () => {
-    const login = (user: {name: string , id : string}) =>{
+    const login = (user: {name: string ,email : string, id : string}) =>{
         localStorage.setItem("user", JSON.stringify(user));
     }
     const logout = () =>{
@@ -8,7 +8,11 @@ export const  useAuth = () => {
     const isAuthenticated = () =>{
         return localStorage.getItem("user") !== null;
     }
+    const getUser = () => {
+        const user = localStorage.getItem("user");
+        return user ? JSON.parse(user) : null;
+    }
 
-    return { login, logout, isAuthenticated };
+    return { login, logout, isAuthenticated , getUser };
 }
 export type AuthContext = ReturnType<typeof useAuth>;

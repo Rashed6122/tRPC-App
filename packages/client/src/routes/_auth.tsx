@@ -4,8 +4,7 @@ import Pinned from "../components/Pinned";
 
 export const Route = createFileRoute("/_auth")({
   beforeLoad: async ({ context }) => {
-    const { isAuthenticated } = context.authentication;
-    console.log("isAuthenticated", isAuthenticated());
+    const { isAuthenticated, getUser } = context.authentication;
     if (!isAuthenticated()) {
       throw redirect({
         to: "/login",

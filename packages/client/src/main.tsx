@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { StrictMode } from "react";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { Router, RouterProvider, createRouter } from "@tanstack/react-router";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 import { useAuth } from "./hooks/useAuth";
@@ -11,7 +11,6 @@ const router = createRouter({
   routeTree,
   context: { authentication: undefined! },
 });
-
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
   interface Register {
