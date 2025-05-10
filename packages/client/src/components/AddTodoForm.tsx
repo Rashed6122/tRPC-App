@@ -4,6 +4,7 @@ import { z } from "zod";
 import useCreateTodo from "../hooks/todos/useCreateTodo";
 import { useGetCategories } from "../hooks/categories/useGetCategories";
 import { useUserStore } from "../hooks/userStore/useUserStore";
+import { useAuth } from "../hooks/useAuth";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
@@ -18,7 +19,7 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 }
 
 export default function AddTodoForm() {
-  const user = useUserStore((state) => state.user);
+  const user = useAuth().getUser();
   const addTodoMutation = useCreateTodo();
   const categories = useGetCategories();
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ export default function AddTodoForm() {
           subTasks: value.subTask,
           pinned: value.pinned,
           categoryId: value.category,
-          userId: user?.id || "cmachm7w60002v2wc0djgsrde",
+          userId: user?.id || "",
         },
         {
           onSuccess: () => {

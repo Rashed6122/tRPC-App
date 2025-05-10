@@ -1,8 +1,10 @@
 import { trpc } from "../../lib/trpc";
+import { useAuth } from "../useAuth";
 
 export const useGetCategories = () => {
+    const user  = useAuth().getUser();
     const { data: categories } = trpc.category.getAll.useQuery(
-        { id: "cmachkfdy0001v2wcb67m4pr0" },
+        { id: user.id },
         {
           initialData: [],
         }

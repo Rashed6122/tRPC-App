@@ -31,6 +31,7 @@ function SignIn() {
       console.log("onMutate", newUser);
     },
     onSuccess: (data) => {
+      console.log(data);
       login.login(data.user);
       setUser(data.user);
       navigate({ to: "/home" });

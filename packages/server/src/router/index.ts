@@ -1,4 +1,4 @@
-import trpc from "../lib/trpc";
+import {trpc} from "../lib/trpc";
 import authRouter from "./auth";
 import categoriesRouter from "./category";
 import todoRouter from "./todo";

@@ -5,16 +5,15 @@ import { RiUnpinFill } from "react-icons/ri";
 import { TrashIcon } from "../icons/trash";
 import { useGetTodos } from "../hooks/todos/useGetTodos";
 import useUpdateTodo from "../hooks/todos/useUpdateTodo";
-import { useUserStore } from "../hooks/userStore/useUserStore";
+import { useAuth } from "../hooks/useAuth";
 
 export default function ListTodos() {
   const { data: todos, isLoading } = useGetTodos();
   const trpcContext = trpc.useUtils();
-  const user = useUserStore((state) => state.user);
-
+  const user = useAuth().getUser();
   const deleteMutation = trpc.todo.deleteTodo.useMutation({
     onMutate: async (deletedTodo) => {
-      trpcContext.todo.allTodos.setData({ id: user?.id || "test" }, (old) => [
+      trpcContext.todo.allTodos.setData({ id: user.id }, (old) => [
         ...(old || []).filter((todo) => todo.id !== deletedTodo.id),
       ]);
     },
@@ -81,7 +80,7 @@ export default function ListTodos() {
                   className="text-white bg-blue-600 px-2 py-1 rounded text-sm cursor-pointer hover:text-black"
                   onClick={() => {
                     navigate({
-                      to: "/auth/todos/$todoId",
+                      to: "/todos/$todoId",
                       params: { todoId: todo.id },
                     });
                   }}

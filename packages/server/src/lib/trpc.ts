@@ -1,5 +1,13 @@
-import {initTRPC} from '@trpc/server'
+import {initTRPC, TRPCError} from '@trpc/server'
+import { Context } from './context';
 
-const trpc =  initTRPC.create();
+export const trpc =  initTRPC.context<Context>().create(); 
 
-export default trpc;
+export const protectedProcedure = trpc.procedure.use(
+  trpc.middleware(({ ctx, next }) => {
+    console.log("userId",ctx.userId)
+    if (!ctx.userId) throw new TRPCError({ code: "UNAUTHORIZED" });
+    return next({ ctx });
+  })
+);
+

@@ -1,22 +1,22 @@
-import trpc from "../../lib/trpc";
+import {protectedProcedure } from "../../lib/trpc";
 import { getOneService, todosService, trashService } from "../../services/todo";
-import {idSchema, optionalIdSchema} from "../../schemas/todo"
+import {idSchema} from "../../schemas/todo"
 
-export const allTodos = trpc.procedure
+export const allTodos = protectedProcedure
 .input(idSchema)
 .query(async ({input}) => {
   const data = await todosService(input.id);
   return data;
 });
 
-export const trash = trpc.procedure
+export const trash = protectedProcedure
 .input(idSchema)
 .query(async ({input}) => {
   const data = await trashService(input.id);
   return data;
 });
 
-export const getOne = trpc.procedure
+export const getOne = protectedProcedure
   .input(idSchema)
   .query(async ({ input }) => {
     const data = await getOneService(input.id);

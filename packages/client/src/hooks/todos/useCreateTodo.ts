@@ -1,12 +1,12 @@
 import { trpc } from "../../lib/trpc";
-import { useUserStore } from "../userStore/useUserStore";
+import { useAuth } from "../useAuth";
 
 const useCreateTodo = () => {
-  const user  = useUserStore((state) => state.user);
+  const user  = useAuth().getUser();
   const context = trpc.useUtils();
   return trpc.todo.create.useMutation({
     onMutate: (todo) => {
-      context.todo.allTodos.setData({id: user?.id || "cmachm7w60002v2wc0djgsrde"}, (old) => {
+      context.todo.allTodos.setData({id: user.id}, (old) => {
         if (!old) return;
         return [
           ...old,

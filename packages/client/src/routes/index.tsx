@@ -7,5 +7,5 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
 
-  return navigate({ to: "/login", params: {} });
+  return navigate({ to: "/home" });
 }

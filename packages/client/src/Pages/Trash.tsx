@@ -1,9 +1,9 @@
-import { useUserStore } from "../hooks/userStore/useUserStore";
+import { useAuth } from "../hooks/useAuth";
 import { trpc } from "../lib/trpc";
 import { Todo } from "../models/Todo";
 
 function Trash() {
-  const user = useUserStore((state) => state.user);
+  const user = useAuth().getUser();
   const { data: trashList, isLoading } = trpc.todo.trash.useQuery(
     { id: user?.id || "cmachm7w60002v2wc0djgsrde" },
     {
@@ -14,24 +14,19 @@ function Trash() {
 
   const restoreMutation = trpc.todo.restore.useMutation({
     onMutate: async (restoredTodo) => {
-      trpcContext.todo.trash.setData(
-        { id: user?.id || "cmachm7w60002v2wc0djgsrde" },
-        (old) => [...(old || []).filter((todo) => todo.id !== restoredTodo.id)]
-      );
-      trpcContext.todo.allTodos.setData(
-        { id: user?.id || "cmachm7w60002v2wc0djgsrde" },
-        (old) => [
-          ...(old || []),
-          trashList.find((todo) => todo.id === restoredTodo.id) as Todo,
-        ]
-      );
+      trpcContext.todo.trash.setData({ id: user.id }, (old) => [
+        ...(old || []).filter((todo) => todo.id !== restoredTodo.id),
+      ]);
+      trpcContext.todo.allTodos.setData({ id: user.id }, (old) => [
+        ...(old || []),
+        trashList.find((todo) => todo.id === restoredTodo.id) as Todo,
+      ]);
     },
   });
   const DestroyMutation = trpc.todo.destory.useMutation({
     onMutate: async (deletedTodo) => {
-      trpcContext.todo.trash.setData(
-        { id: user?.id || "cmachm7w60002v2wc0djgsrde" },
-        (old) => old?.filter((todo) => todo.id !== deletedTodo.id)
+      trpcContext.todo.trash.setData({ id: user.id }, (old) =>
+        old?.filter((todo) => todo.id !== deletedTodo.id)
       );
     },
   });

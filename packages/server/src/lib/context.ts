@@ -1,21 +1,15 @@
-import * as trpcExpress from '@trpc/server/adapters/express';
-export async function createContext({
-  req,
-  res,
-}: trpcExpress.CreateExpressContextOptions) {
-  // Create your context based on the request object
-  // Will be available as `ctx` in all your resolvers
-  // This is just an example of something you might want to do in your ctx fn
-  async function getUserFromHeader() {
-    if (req.headers.authorization) {
-      const user = "test"
-      return user;
-    }
-    return null;
+import { inferAsyncReturnType } from '@trpc/server';
+import { verifyAccessToken } from './tokens';
+import { type CreateExpressContextOptions } from '@trpc/server/adapters/express';
+
+export const createContext = async ({ req , res }: CreateExpressContextOptions) => {
+  const accessToken = req.cookies['access_token'];
+  try {
+    const payload = accessToken ? verifyAccessToken(accessToken) : null;
+    return { req , res,  userId: payload?.userId ?? null };
+  } catch {
+    return { req ,  res, userId: null };
   }
-  const user = await getUserFromHeader();
-  return {
-    user,
-  };
-}
-export type Context = Awaited<ReturnType<typeof createContext>>;
+};
+
+export type Context = inferAsyncReturnType<typeof createContext>;

@@ -12,6 +12,12 @@ function App() {
       links: [
         httpBatchLink({
           url: "http://localhost:3000/trpc",
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: "include",
+            });
+          },
         }),
       ],
     });
@@ -21,9 +27,6 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Link to="/"></Link>
         <Outlet />
-        {/* <Register /> */}
-        {/* <SignIn /> */}
-        {/* <PhoneNumberWithCountryCode /> */}
       </QueryClientProvider>
     </trpc.Provider>
   );

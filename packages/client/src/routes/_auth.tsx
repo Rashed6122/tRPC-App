@@ -1,14 +1,16 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import Aside from "../components/Aside";
 import Pinned from "../components/Pinned";
+import { trpcClient } from "../lib/trpcClient";
 
 export const Route = createFileRoute("/_auth")({
-  beforeLoad: async ({ context }) => {
-    const { isAuthenticated, getUser } = context.authentication;
-    if (!isAuthenticated()) {
-      throw redirect({
-        to: "/login",
-      });
+  beforeLoad: async () => {
+    try {
+      console.log("Auth route");
+      const userId = await trpcClient.auth.me.query();
+      if (!userId) throw new Error("Unauthorized");
+    } catch {
+      throw redirect({ to: "/login" });
     }
   },
   component: AuthLayout,

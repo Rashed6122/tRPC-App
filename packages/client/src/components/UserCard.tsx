@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 import { useAuth } from "../hooks/useAuth";
+import { trpc } from "../lib/trpc";
 
 type UserCardProps = {
   name: string | null | undefined;
@@ -8,7 +9,12 @@ type UserCardProps = {
 
 export const UserCard = ({ name }: UserCardProps) => {
   const navigate = useNavigate();
-  const { logout, isAuthenticated } = useAuth();
+  const { logout } = useAuth();
+  const Logout = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      navigate({ to: "/login" });
+    },
+  });
   const initials = (name || "Ahmed Rashed")
     .split(" ")
     .map((word) => word[0])
@@ -32,8 +38,7 @@ export const UserCard = ({ name }: UserCardProps) => {
         color="#3b82f6"
         onClick={() => {
           logout();
-          console.log("test", isAuthenticated());
-          navigate({ to: "/login" });
+          Logout.mutate();
         }}
       />
     </div>

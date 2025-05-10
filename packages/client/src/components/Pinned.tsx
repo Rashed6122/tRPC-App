@@ -1,10 +1,10 @@
 import { trpc } from "../lib/trpc";
 import MiniCard from "./MiniCard";
-import { useUserStore } from "../hooks/userStore/useUserStore";
+import { useAuth } from "../hooks/useAuth";
 function Pinned() {
-  const user = useUserStore((state) => state.user);
+  const user = useAuth().getUser();
   const { data: todosList } = trpc.todo.allTodos.useQuery({
-    id: user?.id || "test",
+    id: user.id,
   });
   const pinnedList = todosList?.filter((todo) => todo.pinned) ?? [];
   return (

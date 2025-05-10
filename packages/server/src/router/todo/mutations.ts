@@ -1,8 +1,8 @@
-import trpc from "../../lib/trpc";
+import { protectedProcedure} from "../../lib/trpc";
 import {createSchema, idSchema, updateSchema} from "../../schemas/todo";
 import { createService, deleteService, destoryService, restoreService, updateService} from "../../services/todo";
 
-export const create = trpc.procedure
+export const create = protectedProcedure
   .input(
     createSchema
   )
@@ -10,25 +10,25 @@ export const create = trpc.procedure
     createService(input)
   });
 
-export const deleteTodo = trpc.procedure
+export const deleteTodo = protectedProcedure
   .input(idSchema)
   .mutation(({ input }) => {
     deleteService(input.id)
   });
 
-export const destory = trpc.procedure
+export const destory = protectedProcedure
   .input(idSchema)
   .mutation(({ input }) => {
     destoryService(input.id)
   });
 
-export const restore = trpc.procedure
+export const restore = protectedProcedure
   .input(idSchema)
   .mutation(({ input }) => {
     restoreService(input.id)    
   });
 
-export const update = trpc.procedure
+export const update = protectedProcedure
   .input(
     updateSchema
   )
