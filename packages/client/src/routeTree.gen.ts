@@ -13,12 +13,17 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
+import { Route as TeamLeadImport } from './routes/_teamLead'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthTrashImport } from './routes/_auth/trash'
 import { Route as AuthHomeImport } from './routes/_auth/home'
 import { Route as AuthAddOneImport } from './routes/_auth/addOne'
+import { Route as TeamLeadAdminTrashImport } from './routes/_teamLead/admin/trash'
+import { Route as TeamLeadAdminHomeImport } from './routes/_teamLead/admin/home'
+import { Route as TeamLeadAdminAddOneImport } from './routes/_teamLead/admin/addOne'
 import { Route as AuthTodosTodoIdImport } from './routes/_auth/todos/$todoId'
+import { Route as TeamLeadAdminTodosTodoIdImport } from './routes/_teamLead/admin/todos/$todoId'
 
 // Create/Update Routes
 
@@ -31,6 +36,11 @@ const RegisterRoute = RegisterImport.update({
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TeamLeadRoute = TeamLeadImport.update({
+  id: '/_teamLead',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -63,10 +73,34 @@ const AuthAddOneRoute = AuthAddOneImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const TeamLeadAdminTrashRoute = TeamLeadAdminTrashImport.update({
+  id: '/admin/trash',
+  path: '/admin/trash',
+  getParentRoute: () => TeamLeadRoute,
+} as any)
+
+const TeamLeadAdminHomeRoute = TeamLeadAdminHomeImport.update({
+  id: '/admin/home',
+  path: '/admin/home',
+  getParentRoute: () => TeamLeadRoute,
+} as any)
+
+const TeamLeadAdminAddOneRoute = TeamLeadAdminAddOneImport.update({
+  id: '/admin/addOne',
+  path: '/admin/addOne',
+  getParentRoute: () => TeamLeadRoute,
+} as any)
+
 const AuthTodosTodoIdRoute = AuthTodosTodoIdImport.update({
   id: '/todos/$todoId',
   path: '/todos/$todoId',
   getParentRoute: () => AuthRoute,
+} as any)
+
+const TeamLeadAdminTodosTodoIdRoute = TeamLeadAdminTodosTodoIdImport.update({
+  id: '/admin/todos/$todoId',
+  path: '/admin/todos/$todoId',
+  getParentRoute: () => TeamLeadRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -85,6 +119,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
+    '/_teamLead': {
+      id: '/_teamLead'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof TeamLeadImport
       parentRoute: typeof rootRoute
     }
     '/login': {
@@ -129,6 +170,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthTodosTodoIdImport
       parentRoute: typeof AuthImport
     }
+    '/_teamLead/admin/addOne': {
+      id: '/_teamLead/admin/addOne'
+      path: '/admin/addOne'
+      fullPath: '/admin/addOne'
+      preLoaderRoute: typeof TeamLeadAdminAddOneImport
+      parentRoute: typeof TeamLeadImport
+    }
+    '/_teamLead/admin/home': {
+      id: '/_teamLead/admin/home'
+      path: '/admin/home'
+      fullPath: '/admin/home'
+      preLoaderRoute: typeof TeamLeadAdminHomeImport
+      parentRoute: typeof TeamLeadImport
+    }
+    '/_teamLead/admin/trash': {
+      id: '/_teamLead/admin/trash'
+      path: '/admin/trash'
+      fullPath: '/admin/trash'
+      preLoaderRoute: typeof TeamLeadAdminTrashImport
+      parentRoute: typeof TeamLeadImport
+    }
+    '/_teamLead/admin/todos/$todoId': {
+      id: '/_teamLead/admin/todos/$todoId'
+      path: '/admin/todos/$todoId'
+      fullPath: '/admin/todos/$todoId'
+      preLoaderRoute: typeof TeamLeadAdminTodosTodoIdImport
+      parentRoute: typeof TeamLeadImport
+    }
   }
 }
 
@@ -150,38 +219,69 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface TeamLeadRouteChildren {
+  TeamLeadAdminAddOneRoute: typeof TeamLeadAdminAddOneRoute
+  TeamLeadAdminHomeRoute: typeof TeamLeadAdminHomeRoute
+  TeamLeadAdminTrashRoute: typeof TeamLeadAdminTrashRoute
+  TeamLeadAdminTodosTodoIdRoute: typeof TeamLeadAdminTodosTodoIdRoute
+}
+
+const TeamLeadRouteChildren: TeamLeadRouteChildren = {
+  TeamLeadAdminAddOneRoute: TeamLeadAdminAddOneRoute,
+  TeamLeadAdminHomeRoute: TeamLeadAdminHomeRoute,
+  TeamLeadAdminTrashRoute: TeamLeadAdminTrashRoute,
+  TeamLeadAdminTodosTodoIdRoute: TeamLeadAdminTodosTodoIdRoute,
+}
+
+const TeamLeadRouteWithChildren = TeamLeadRoute._addFileChildren(
+  TeamLeadRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof AuthRouteWithChildren
+  '': typeof TeamLeadRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/addOne': typeof AuthAddOneRoute
   '/home': typeof AuthHomeRoute
   '/trash': typeof AuthTrashRoute
   '/todos/$todoId': typeof AuthTodosTodoIdRoute
+  '/admin/addOne': typeof TeamLeadAdminAddOneRoute
+  '/admin/home': typeof TeamLeadAdminHomeRoute
+  '/admin/trash': typeof TeamLeadAdminTrashRoute
+  '/admin/todos/$todoId': typeof TeamLeadAdminTodosTodoIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof AuthRouteWithChildren
+  '': typeof TeamLeadRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/addOne': typeof AuthAddOneRoute
   '/home': typeof AuthHomeRoute
   '/trash': typeof AuthTrashRoute
   '/todos/$todoId': typeof AuthTodosTodoIdRoute
+  '/admin/addOne': typeof TeamLeadAdminAddOneRoute
+  '/admin/home': typeof TeamLeadAdminHomeRoute
+  '/admin/trash': typeof TeamLeadAdminTrashRoute
+  '/admin/todos/$todoId': typeof TeamLeadAdminTodosTodoIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/_teamLead': typeof TeamLeadRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_auth/addOne': typeof AuthAddOneRoute
   '/_auth/home': typeof AuthHomeRoute
   '/_auth/trash': typeof AuthTrashRoute
   '/_auth/todos/$todoId': typeof AuthTodosTodoIdRoute
+  '/_teamLead/admin/addOne': typeof TeamLeadAdminAddOneRoute
+  '/_teamLead/admin/home': typeof TeamLeadAdminHomeRoute
+  '/_teamLead/admin/trash': typeof TeamLeadAdminTrashRoute
+  '/_teamLead/admin/todos/$todoId': typeof TeamLeadAdminTodosTodoIdRoute
 }
 
 export interface FileRouteTypes {
@@ -195,6 +295,10 @@ export interface FileRouteTypes {
     | '/home'
     | '/trash'
     | '/todos/$todoId'
+    | '/admin/addOne'
+    | '/admin/home'
+    | '/admin/trash'
+    | '/admin/todos/$todoId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -205,22 +309,32 @@ export interface FileRouteTypes {
     | '/home'
     | '/trash'
     | '/todos/$todoId'
+    | '/admin/addOne'
+    | '/admin/home'
+    | '/admin/trash'
+    | '/admin/todos/$todoId'
   id:
     | '__root__'
     | '/'
     | '/_auth'
+    | '/_teamLead'
     | '/login'
     | '/register'
     | '/_auth/addOne'
     | '/_auth/home'
     | '/_auth/trash'
     | '/_auth/todos/$todoId'
+    | '/_teamLead/admin/addOne'
+    | '/_teamLead/admin/home'
+    | '/_teamLead/admin/trash'
+    | '/_teamLead/admin/todos/$todoId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
+  TeamLeadRoute: typeof TeamLeadRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
 }
@@ -228,6 +342,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
+  TeamLeadRoute: TeamLeadRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
 }
@@ -244,6 +359,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_auth",
+        "/_teamLead",
         "/login",
         "/register"
       ]
@@ -258,6 +374,15 @@ export const routeTree = rootRoute
         "/_auth/home",
         "/_auth/trash",
         "/_auth/todos/$todoId"
+      ]
+    },
+    "/_teamLead": {
+      "filePath": "_teamLead.tsx",
+      "children": [
+        "/_teamLead/admin/addOne",
+        "/_teamLead/admin/home",
+        "/_teamLead/admin/trash",
+        "/_teamLead/admin/todos/$todoId"
       ]
     },
     "/login": {
@@ -281,6 +406,22 @@ export const routeTree = rootRoute
     "/_auth/todos/$todoId": {
       "filePath": "_auth/todos/$todoId.tsx",
       "parent": "/_auth"
+    },
+    "/_teamLead/admin/addOne": {
+      "filePath": "_teamLead/admin/addOne.tsx",
+      "parent": "/_teamLead"
+    },
+    "/_teamLead/admin/home": {
+      "filePath": "_teamLead/admin/home.tsx",
+      "parent": "/_teamLead"
+    },
+    "/_teamLead/admin/trash": {
+      "filePath": "_teamLead/admin/trash.tsx",
+      "parent": "/_teamLead"
+    },
+    "/_teamLead/admin/todos/$todoId": {
+      "filePath": "_teamLead/admin/todos/$todoId.tsx",
+      "parent": "/_teamLead"
     }
   }
 }

@@ -50,7 +50,9 @@ function Aside() {
         </button>
       </div>
 
-      <div className="sidebar bg-blue-800 text-blue-100 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+      <div
+        className={`sidebar ${user.id ? "bg-cyan-700" : "bg-blue-800"} flex flex-col h-screen  text-blue-100 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out`}
+      >
         <UserCard name={user.name} />
         <a
           className="text-white flex items-center space-x-2 px-4"
@@ -62,30 +64,32 @@ function Aside() {
           <span className="text-2xl font-extrabold">Categories</span>
         </a>
 
-        <nav>
+        <nav className="flex flex-col flex-grow justify-between">
+          <div>
+            <a
+              onClick={() => {
+                fillterTodos("");
+                navigate({ to: "/home" });
+              }}
+              className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
+            >
+              All Tasks
+            </a>
+            {categories.map((category) => {
+              return (
+                <a
+                  onClick={() => {
+                    fillterTodos(category.id);
+                  }}
+                  className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
+                >
+                  {category.name}
+                </a>
+              );
+            })}
+          </div>
           <a
-            onClick={() => {
-              fillterTodos("");
-              navigate({ to: "/home" });
-            }}
-            className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
-          >
-            All Tasks
-          </a>
-          {categories.map((category) => {
-            return (
-              <a
-                onClick={() => {
-                  fillterTodos(category.id);
-                }}
-                className="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white"
-              >
-                {category.name}
-              </a>
-            );
-          })}
-          <a
-            className="flex  justify-between py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white "
+            className=" flex justify-between py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 hover:text-white "
             onClick={() => navigate({ to: "/trash" })}
           >
             Trash List

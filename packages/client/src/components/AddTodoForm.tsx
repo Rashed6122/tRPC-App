@@ -3,7 +3,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import useCreateTodo from "../hooks/todos/useCreateTodo";
 import { useGetCategories } from "../hooks/categories/useGetCategories";
-import { useUserStore } from "../hooks/userStore/useUserStore";
 import { useAuth } from "../hooks/useAuth";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {

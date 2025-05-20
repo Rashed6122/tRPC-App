@@ -5,26 +5,23 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const loginService = async(input: z.infer<typeof loginSchema>) =>{
-    const { email , password } = input;
-    const SECRET_KEY = 'your_jwt_secret';
+    const { email } = input;
     const user = await prisma.user.findUnique({
-        where: {
-            email: email,
-        },
-    });
-    if (user && await bcrypt.compare(password, user.password)) {
-        const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: '1h' });
-        return {
-            token,
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
+            where: {
+                email: email,
             },
-        };
+        });
+    if (user){
+        return{
+            id: user.id,
+            email : user.email,
+            password : user.password,
+            name: user.name
+        } 
+            
     }
     else{
-        throw new Error("Invalid credentials");
+        throw new Error("Email doesn't exist");
     }
 }
 

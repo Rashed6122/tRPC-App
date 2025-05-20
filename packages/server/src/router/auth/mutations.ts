@@ -1,5 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { prisma } from "../../lib/prismaClient";
 import { createTokens, verifyRefreshToken } from "../../lib/tokens";
 import {protectedProcedure, trpc} from "../../lib/trpc";
 import {loginSchema , registerSchema} from "../../schemas/todo";
@@ -12,16 +11,8 @@ export const login = trpc.procedure
     loginSchema
   )
   .mutation(async({ input , ctx }) => {
-    // const data = loginService(input )
-    // return data;
-    
-    const { email , password } = input;
-    const user = await prisma.user.findUnique({
-            where: {
-                email: email,
-            },
-        });
-    if (user && await bcrypt.compare(password, user.password)) {
+    const user = await loginService(input)
+    if (user && await bcrypt.compare(input.password, user.password)) {
       const { accessToken, refreshToken } = createTokens(user.id);
       
       ctx.res.setHeader('Set-Cookie', [

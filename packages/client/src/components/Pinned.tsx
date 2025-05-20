@@ -14,7 +14,9 @@ function Pinned() {
           Pinned Tasks
         </a>
       </div>
-      <div className="sidebar bg-blue-800 text-blue-100 w-66 space-y-6 py-7 px-2 absolute inset-y-0 right-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+      <div
+        className={`${user.id ? "bg-cyan-700" : "bg-blue-800"} text-blue-100 w-66 space-y-6 py-7 px-2 absolute inset-y-0 right-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out`}
+      >
         <a href="#" className="text-white flex items-center space-x-2 px-4">
           <span className="text-2xl font-extrabold">Pinned Tasks</span>
         </a>
