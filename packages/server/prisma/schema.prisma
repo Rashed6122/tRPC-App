@@ -20,7 +20,9 @@ model Todo {
   category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   categoryId  String?
   pinned      Boolean   @default(false)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedby  User?     @relation(name: "owner", fields: [ownerId], references: [id], onDelete: Cascade)
+  assignedTo  User      @relation(name: "employee", fields: [userId], references: [id], onDelete: Cascade)
+  ownerId     String?
   userId      String
 
   @@index([categoryId])
@@ -45,16 +47,18 @@ model SubTask {
 }
 
 model User {
-  id         String           @id @default(cuid())
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
-  email      String           @unique
-  name       String
-  password   String
-  age        Int
-  phone      String
-  todos      Todo[]           @relation
-  categories UserCategories[]
+  id            String           @id @default(cuid())
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  email         String           @unique
+  name          String
+  password      String
+  age           Int
+  phone         String
+  Mytodos       Todo[]           @relation(name: "owner")
+  assignedToDos Todo[]           @relation(name: "employee")
+  categories    UserCategories[]
+  role          Role             @default(USER)
 }
 
 model UserCategories {
@@ -66,4 +70,9 @@ model UserCategories {
   categoryId String
 
   @@id([userId, categoryId])
+}
+
+enum Role {
+  USER
+  ADMIN
 }

@@ -31,6 +31,17 @@ export const todosService = async(id : string) =>{
   return todos;
 }
 
+export const getUsersService = async() =>{ 
+    const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+
+    },
+  });
+  return users;
+}
+
 /** 
  *  This function fetches all todos from the database that are deleted. 
  */
@@ -106,7 +117,25 @@ export const createService = async(input: z.infer<typeof createSchema>) =>{
       },
     });
 }
-
+export const assignService = async(input: z.infer<typeof createSchema>) =>{
+    const { id, title, categoryId, pinned , userId , ownerId } = input;
+    return prisma.todo.create({
+      data: {
+        id,
+        title,
+        isCompleted: false,
+        pinned,
+        categoryId,
+        ...(ownerId ? { ownerId } : {}), 
+        userId: userId, 
+        subTasks: {
+          create: input.subTasks?.map((subTask) => ({
+            item: subTask.item,
+          })),
+        },
+      },
+    });
+}
 /** 
  *  This function deletes a todo from the database by marking it as deleted. 
  */

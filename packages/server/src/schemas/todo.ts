@@ -9,6 +9,7 @@ export const createSchema = z.object({
       categoryId: z.string(),
       subTasks: z.array(z.object({ item: z.string().min(3) })).optional(),
       userId : z.string().cuid2(),
+      ownerId: z.string().cuid2().optional(),
     });
 
 export const updateSchema = z.object({
