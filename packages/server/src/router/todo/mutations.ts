@@ -1,4 +1,4 @@
-import { protectedProcedure} from "../../lib/trpc";
+import { adminProcedure, protectedProcedure} from "../../lib/trpc";
 import {createSchema, idSchema, updateSchema} from "../../schemas/todo";
 import { assignService, createService, deleteService, destoryService, restoreService, updateService} from "../../services/todo";
 
@@ -10,7 +10,7 @@ export const create = protectedProcedure
     createService(input)
   });
 
-export const assign = protectedProcedure
+export const assign = adminProcedure
   .input(
     createSchema
   )

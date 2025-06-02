@@ -34,7 +34,11 @@ function SignIn() {
       console.log(data);
       login.login(data.user);
       setUser(data.user);
-      navigate({ to: "/home" });
+      if (data.user.role === "ADMIN") {
+        navigate({ to: "/admin/home" });
+      } else {
+        navigate({ to: "/home" });
+      }
     },
   });
   const form = useForm({

@@ -3,6 +3,7 @@ import { loginSchema, registerSchema } from "../schemas/todo";
 import { prisma } from "../lib/prismaClient";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { Role } from "@prisma/client";
 
 export const loginService = async(input: z.infer<typeof loginSchema>) =>{
     const { email } = input;
@@ -16,7 +17,8 @@ export const loginService = async(input: z.infer<typeof loginSchema>) =>{
             id: user.id,
             email : user.email,
             password : user.password,
-            name: user.name
+            name: user.name,
+            role: user.role
         } 
             
     }
@@ -46,6 +48,7 @@ export const registerService = async(input: z.infer<typeof registerSchema>) =>{
                 password: hashedPassword,
                 age,
                 phone,
+                role: Role.ADMIN, // Default role, can be changed based on your logic
             },
         });
         const token = jwt.sign({ id: newUser.id }, SECRET_KEY, { expiresIn: '1h' });
@@ -55,6 +58,7 @@ export const registerService = async(input: z.infer<typeof registerSchema>) =>{
                 id: newUser.id,
                 email: newUser.email,
                 name: newUser.name,
+                role: newUser.role,
             },
         };
         

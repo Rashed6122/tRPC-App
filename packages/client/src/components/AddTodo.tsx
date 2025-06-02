@@ -8,12 +8,16 @@ export default function AddTodo() {
   return (
     <div className="grid grid-cols-1 grid-rows-1 mx-1">
       <button
-        className={`${user.id ? "bg-cyan-700 hover:bg-cyan-800 active:bg-cyan-700" : "bg-blue-500 hover:bg-blue-600 active:bg-blue-500"} text-white py-1 px-3 rounded-md`}
+        className={`${user.role === "ADMIN" ? "bg-cyan-700 hover:bg-cyan-800 active:bg-cyan-700" : "bg-blue-500 hover:bg-blue-600 active:bg-blue-500"} text-white py-1 px-3 rounded-md`}
         onClick={() => {
-          navigate({ to: "/admin/addOne" });
+          if (user.role === "ADMIN") {
+            navigate({ to: "/admin/addOne" });
+          } else {
+            navigate({ to: "/addOne" });
+          }
         }}
       >
-        Add {user.id && <span>or assign</span>} todo
+        Add {user.role === "ADMIN" && <span>or assign</span>} todo
       </button>
     </div>
   );

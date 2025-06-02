@@ -1,4 +1,4 @@
-import {protectedProcedure } from "../../lib/trpc";
+import {adminProcedure, protectedProcedure } from "../../lib/trpc";
 import { getOneService, getUsersService, todosService, trashService } from "../../services/todo";
 import {idSchema} from "../../schemas/todo"
 
@@ -23,7 +23,7 @@ export const getOne = protectedProcedure
     return data;
   });
 
-export const getUsers = protectedProcedure
+export const getUsers = adminProcedure
   .query(async () => {
     const data = await getUsersService();
     return data;

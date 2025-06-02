@@ -1,7 +1,7 @@
 import { trpc } from "../lib/trpc";
 
 export const  useAuth = () => {
-    const login = (user: {name: string ,email : string, id : string}) =>{
+    const login = (user: {name: string ,email : string, id : string , role : string}) =>{
         console.log("user", user);
         localStorage.setItem("user", JSON.stringify(user));
     }
@@ -15,9 +15,9 @@ export const  useAuth = () => {
     const getUser = () => {
         const user = localStorage.getItem("user");
         if (user){
-            return JSON.parse(user) as {name: string ,email : string, id : string};
+            return JSON.parse(user) as {name: string ,email : string, id : string, role : string};
         }
-        return {id: "", name: "", email: ""};    
+        return {id: "", name: "", email: "", role: ""};    
 }
 
     return { login, logout , getUser };

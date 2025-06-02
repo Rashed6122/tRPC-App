@@ -34,3 +34,7 @@ export const registerSchema = z.object({
       password: z.string().min(6, { message: "Password must be at least 6" }),
     });
 
+export const createCategorySchema = z.object({
+  name : z.string().min(3)
+})
+

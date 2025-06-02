@@ -1,11 +1,14 @@
 import { useGetCategories } from "../hooks/categories/useGetCategories";
 import { useUserStore } from "../hooks/userStore/useUserStore";
+import { IoIosOptions } from "react-icons/io";
+
 import LogoIcon from "../icons/logo";
 import { TrashIcon } from "../icons/trash";
 import { trpc } from "../lib/trpc";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { UserCard } from "./UserCard";
 import { useAuth } from "../hooks/useAuth";
+import ToolsDropdown from "./categoryOptions";
 
 function Aside() {
   // const context = useRouteContext({ from: "/_auth" });
@@ -51,20 +54,25 @@ function Aside() {
       </div>
 
       <div
-        className={`sidebar ${user.id ? "bg-cyan-700" : "bg-blue-800"} flex flex-col h-screen  text-blue-100 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out`}
+        className={`sidebar ${user.role === "ADMIN" ? "bg-cyan-700" : "bg-blue-800"} flex flex-col h-screen  text-blue-100 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out`}
       >
         <UserCard name={user.name} />
         <a
-          className="text-white flex items-center space-x-2 px-4"
+          className="text-white flex flex-row justify-between items-center space-x-2 px-4"
           onClick={() => {
             navigate({ to: "/home" });
           }}
         >
-          <LogoIcon />
-          <span className="text-2xl font-extrabold">Categories</span>
+          <div className="flex items-center flex-row space-x-2">
+            <LogoIcon />
+            <span className="text-2xl font-extrabold">Categories</span>
+          </div>
+          <div className="mt-1">
+            <ToolsDropdown />
+          </div>
         </a>
 
-        <nav className="flex flex-col flex-grow justify-between">
+        <nav className="flex flex-col flex-grow justify-between ">
           <div>
             <a
               onClick={() => {
